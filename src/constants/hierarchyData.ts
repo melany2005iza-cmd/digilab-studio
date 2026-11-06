@@ -80,11 +80,11 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // Salidas LEDs
-          { id: 'led_s0', type: 'LED', label: 'Σ0 (LSB)', x: 600, y: 150, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'led_s1', type: 'LED', label: 'Σ1', x: 600, y: 220, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'led_s2', type: 'LED', label: 'Σ2', x: 600, y: 290, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'led_s3', type: 'LED', label: 'Σ3 (MSB)', x: 600, y: 360, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'led_cout', type: 'LED', label: 'Cout (Carry)', x: 600, y: 440, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#c084fc' } },
+          { id: 'led_s0', type: 'LED', label: 'Σ0 (LSB)', x: 600, y: 150, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_s1', type: 'LED', label: 'Σ1', x: 600, y: 220, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_s2', type: 'LED', label: 'Σ2', x: 600, y: 290, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_s3', type: 'LED', label: 'Σ3 (MSB)', x: 600, y: 360, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_cout', type: 'LED', label: 'Cout (Carry)', x: 600, y: 440, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w1', fromNodeId: 'sw_cin', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_cin' },
@@ -171,11 +171,11 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // Salidas LEDs
-          { id: 'fa_led_s0', type: 'LED', label: 'Σ0', x: 500, y: 130, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'fa_led_s1', type: 'LED', label: 'Σ1', x: 500, y: 270, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'fa_led_s2', type: 'LED', label: 'Σ2', x: 500, y: 410, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'fa_led_s3', type: 'LED', label: 'Σ3', x: 500, y: 550, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'fa_led_cout', type: 'LED', label: 'Cout final', x: 500, y: 620, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#c084fc' } },
+          { id: 'fa_led_s0', type: 'LED', label: 'Σ0', x: 500, y: 130, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'fa_led_s1', type: 'LED', label: 'Σ1', x: 500, y: 270, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'fa_led_s2', type: 'LED', label: 'Σ2', x: 500, y: 410, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'fa_led_s3', type: 'LED', label: 'Σ3', x: 500, y: 550, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'fa_led_cout', type: 'LED', label: 'Cout final', x: 500, y: 620, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_fa_cin', fromNodeId: 'fa_sw_cin', fromPinId: 'out', toNodeId: 'fa_node_0', toPinId: 'cin' },
@@ -255,8 +255,8 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // LEDs Salida
-          { id: 'n3_led_sum', type: 'LED', label: 'Σ (Suma)', x: 770, y: 190, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'n3_led_cout', type: 'LED', label: 'Cout', x: 770, y: 290, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#c084fc' } },
+          { id: 'n3_led_sum', type: 'LED', label: 'Σ (Suma)', x: 770, y: 190, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'n3_led_cout', type: 'LED', label: 'Cout', x: 770, y: 290, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_n3_1', fromNodeId: 'n3_sw_a', fromPinId: 'out', toNodeId: 'n3_ha1', toPinId: 'a' },
@@ -293,8 +293,8 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           { id: 'n4_or1', type: 'OR', label: 'OR (Cout)', x: 630, y: 270, width: 100, height: 60, inputs: [createPin('in1', 'C1', 'in', 0, 0.3), createPin('in2', 'C2', 'in', 0, 0.7)], outputs: [createPin('out', 'Cout', 'out', 1, 0.5)] },
 
           // LEDs Salida
-          { id: 'n4_led_sum', type: 'LED', label: 'Σ (Suma)', x: 650, y: 140, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'n4_led_cout', type: 'LED', label: 'Cout', x: 790, y: 275, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#c084fc' } },
+          { id: 'n4_led_sum', type: 'LED', label: 'Σ (Suma)', x: 650, y: 140, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'n4_led_cout', type: 'LED', label: 'Cout', x: 790, y: 275, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_n4_1', fromNodeId: 'n4_sw_a', fromPinId: 'out', toNodeId: 'n4_xor1', toPinId: 'in1' },
@@ -523,11 +523,11 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // LEDs para las salidas representativas (Y0 a Y7, Y5 activa)
-          { id: 'led_y0', type: 'LED', label: 'Y0', x: 520, y: 130, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
-          { id: 'led_y1', type: 'LED', label: 'Y1', x: 520, y: 180, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
-          { id: 'led_y5', type: 'LED', label: 'Y5 (Activa)', x: 520, y: 240, width: 85, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'led_y10', type: 'LED', label: 'Y10', x: 520, y: 310, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
-          { id: 'led_y15', type: 'LED', label: 'Y15', x: 520, y: 380, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
+          { id: 'led_y0', type: 'LED', label: 'Y0', x: 520, y: 130, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_y1', type: 'LED', label: 'Y1', x: 520, y: 180, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_y5', type: 'LED', label: 'Y5 (Activa)', x: 520, y: 240, width: 85, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_y10', type: 'LED', label: 'Y10', x: 520, y: 310, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'led_y15', type: 'LED', label: 'Y15', x: 520, y: 380, width: 65, height: 40, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_dec1', fromNodeId: 'dec_sw_a', fromPinId: 'out', toNodeId: 'ic_74154_main', toPinId: 'a' },
@@ -614,7 +614,7 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // LED indicador para Y5
-          { id: 'tree_led_y5', type: 'LED', label: 'Salida Y5 (Activa)', x: 640, y: 235, width: 110, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
+          { id: 'tree_led_y5', type: 'LED', label: 'Salida Y5 (Activa)', x: 640, y: 235, width: 110, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_t1', fromNodeId: 'tree_sw_c', fromPinId: 'out', toNodeId: 'tree_dec_root', toPinId: 'in0' },
@@ -655,10 +655,10 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           { id: 'd24_and3', type: 'AND', label: 'AND 3 (A·B)', x: 380, y: 350, width: 105, height: 55, inputs: [createPin('i1', 'A', 'in', 0, 0.3), createPin('i2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y3', 'out', 1, 0.5)] },
 
           // LEDs Salida
-          { id: 'd24_led_y0', type: 'LED', label: 'Y0 (00)', x: 550, y: 85, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
-          { id: 'd24_led_y1', type: 'LED', label: 'Y1 (01)', x: 550, y: 175, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'd24_led_y2', type: 'LED', label: 'Y2 (10)', x: 550, y: 265, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
-          { id: 'd24_led_y3', type: 'LED', label: 'Y3 (11)', x: 550, y: 355, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
+          { id: 'd24_led_y0', type: 'LED', label: 'Y0 (00)', x: 550, y: 85, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'd24_led_y1', type: 'LED', label: 'Y1 (01)', x: 550, y: 175, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'd24_led_y2', type: 'LED', label: 'Y2 (10)', x: 550, y: 265, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'd24_led_y3', type: 'LED', label: 'Y3 (11)', x: 550, y: 355, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_d1', fromNodeId: 'd24_sw_a', fromPinId: 'out', toNodeId: 'd24_not_a', toPinId: 'in' },
@@ -726,9 +726,9 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // Salidas LEDs
-          { id: 'enc_led_a0', type: 'LED', label: 'A0 (1)', x: 500, y: 190, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'enc_led_a1', type: 'LED', label: 'A1 (0)', x: 500, y: 280, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'enc_led_a2', type: 'LED', label: 'A2 (1)', x: 500, y: 370, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
+          { id: 'enc_led_a0', type: 'LED', label: 'A0 (1)', x: 500, y: 190, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'enc_led_a1', type: 'LED', label: 'A1 (0)', x: 500, y: 280, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'enc_led_a2', type: 'LED', label: 'A2 (1)', x: 500, y: 370, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_e0', fromNodeId: 'enc_sw_0', fromPinId: 'out', toNodeId: 'ic_74148_main', toPinId: 'i0' },
@@ -759,9 +759,9 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           { id: 'or_gate_a1', type: 'OR', label: 'OR A1 (I2+I3+I6+I7)', x: 300, y: 230, width: 130, height: 70, inputs: [createPin('i2', 'I2', 'in', 0, 0.3), createPin('i6', 'I6', 'in', 0, 0.7)], outputs: [createPin('out', 'A1', 'out', 1, 0.5)] },
           { id: 'or_gate_a2', type: 'OR', label: 'OR A2 (I4+I5+I6+I7)', x: 300, y: 340, width: 130, height: 70, inputs: [createPin('i4', 'I4', 'in', 0, 0.3), createPin('i5', 'I5', 'in', 0, 0.7)], outputs: [createPin('out', 'A2', 'out', 1, 0.5)] },
 
-          { id: 'or_led_a0', type: 'LED', label: 'A0 (1)', x: 520, y: 130, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'or_led_a1', type: 'LED', label: 'A1 (0)', x: 520, y: 240, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'or_led_a2', type: 'LED', label: 'A2 (1)', x: 520, y: 350, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
+          { id: 'or_led_a0', type: 'LED', label: 'A0 (1)', x: 520, y: 130, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'or_led_a1', type: 'LED', label: 'A1 (0)', x: 520, y: 240, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'or_led_a2', type: 'LED', label: 'A2 (1)', x: 520, y: 350, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_or_1', fromNodeId: 'or_sw_i5', fromPinId: 'out', toNodeId: 'or_gate_a0', toPinId: 'i5' },
@@ -815,9 +815,9 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // LEDs Salida
-          { id: 'cmp_led_gt', type: 'LED', label: 'A > B (Activa)', x: 530, y: 150, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
-          { id: 'cmp_led_eq', type: 'LED', label: 'A = B', x: 530, y: 235, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
-          { id: 'cmp_led_lt', type: 'LED', label: 'A < B', x: 530, y: 320, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
+          { id: 'cmp_led_gt', type: 'LED', label: 'A > B (Activa)', x: 530, y: 150, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'cmp_led_eq', type: 'LED', label: 'A = B', x: 530, y: 235, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'cmp_led_lt', type: 'LED', label: 'A < B', x: 530, y: 320, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_cmp_a3', fromNodeId: 'cmp_sw_a3', fromPinId: 'out', toNodeId: 'ic_7485_main', toPinId: 'a3' },
@@ -847,8 +847,8 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           { id: 'n2cmp_and_gt', type: 'AND', label: 'AND (A>B: A·~B)', x: 400, y: 200, width: 110, height: 60, inputs: [createPin('i1', 'A', 'in', 0, 0.3), createPin('i2', '~B', 'in', 0, 0.7)], outputs: [createPin('out', 'A>B', 'out', 1, 0.5)] },
 
           // LEDs
-          { id: 'n2cmp_led_eq', type: 'LED', label: 'A = B', x: 570, y: 130, width: 85, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#e879f9' } },
-          { id: 'n2cmp_led_gt', type: 'LED', label: 'A > B (Activa)', x: 570, y: 210, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
+          { id: 'n2cmp_led_eq', type: 'LED', label: 'A = B', x: 570, y: 130, width: 85, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'n2cmp_led_gt', type: 'LED', label: 'A > B (Activa)', x: 570, y: 210, width: 95, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_n2cmp1', fromNodeId: 'n2cmp_sw_a', fromPinId: 'out', toNodeId: 'n2cmp_xnor', toPinId: 'i1' },
@@ -908,7 +908,7 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           },
 
           // LED Salida
-          { id: 'mux_led_out', type: 'LED', label: 'Salida Y (D2=1)', x: 480, y: 190, width: 95, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
+          { id: 'mux_led_out', type: 'LED', label: 'Salida Y (D2=1)', x: 480, y: 190, width: 95, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_m_d0', fromNodeId: 'mux_sw_d0', fromPinId: 'out', toNodeId: 'mux_main_node', toPinId: 'd0' },
@@ -947,7 +947,7 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
           { id: 'n2m_or', type: 'OR', label: 'OR Colector (Y)', x: 540, y: 180, width: 100, height: 70, inputs: [createPin('i1', 'In1', 'in', 0, 0.3), createPin('i2', 'Y2', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
 
           // LED Salida
-          { id: 'n2m_led', type: 'LED', label: 'Salida Y (1)', x: 700, y: 190, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f472b6' } },
+          { id: 'n2m_led', type: 'LED', label: 'Salida Y (1)', x: 700, y: 190, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
         ],
         wires: [
           { id: 'w_n2m_1', fromNodeId: 'n2m_sw_s0', fromPinId: 'out', toNodeId: 'n2m_not_s0', toPinId: 'in' },

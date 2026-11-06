@@ -124,7 +124,7 @@ export function createNodeTemplate(type: string, label: string): ComponentTempla
       height: 50,
       inputs: [{ id: 'in', name: 'In', type: 'in', value: 0, relX: 0, relY: 0.5 }],
       outputs: [],
-      state: { color: '#f472b6', value: 0 },
+      state: { color: '#10b981', value: 0 },
     };
   }
 

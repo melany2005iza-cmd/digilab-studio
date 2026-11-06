@@ -1,9 +1,9 @@
 /**
- * AdaLab Studio - Wires SVG Renderer Component (Pastel Blossom Edition)
+ * AdaLab Studio - Wires SVG Renderer Component (IEEE Schematic Style)
  * 
- * Renderizado de cables lógicos SIN CURVAS (Ortogonales tipo PCB / Manhattan).
+ * Renderizado de cables lógicos SIN CURVAS (Ortogonales tipo esquemático IEEE / PCB).
  * Trazo rectilíneo a 90 grados sin curvas Bezier, con estado ALTO (1)
- * en rosa fresa pastel (#ec4899) y estado BAJO (0) en lavanda pastel (#d8b4e2).
+ * en verde esmeralda brillante (#10b981) con halo suave y estado BAJO (0) en gris pizarra (#3b4252).
  */
 
 import React from 'react';
@@ -65,13 +65,13 @@ export const WiresRenderer: React.FC<WiresRendererProps> = ({
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
       <defs>
-        {/* Filtro de glow para cables con señal ALTA (1) en rosa pastel */}
+        {/* Filtro de glow para cables con señal ALTA (1) en verde esmeralda */}
         <filter id="wire-glow-high" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#f472b6" floodOpacity="0.65" />
+          <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#10b981" floodOpacity="0.55" />
         </filter>
-        {/* Filtro de selección en lila pastel */}
+        {/* Filtro de selección en rosa/fucsia */}
         <filter id="wire-glow-selected" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#c084fc" floodOpacity="0.8" />
+          <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#e11d48" floodOpacity="0.75" />
         </filter>
       </defs>
 
@@ -102,30 +102,30 @@ export const WiresRenderer: React.FC<WiresRendererProps> = ({
               }}
             />
 
-            {/* Trazo rectilíneo del cable en tonos pastel */}
+            {/* Halo suave detrás del cable activo */}
+            {isHigh && !isSelected && (
+              <path
+                d={pathData}
+                fill="none"
+                stroke="#10b981"
+                strokeOpacity="0.22"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+
+            {/* Trazo rectilíneo principal del cable */}
             <path
               d={pathData}
               fill="none"
-              stroke={isSelected ? '#a855f7' : isHigh ? '#ec4899' : '#d8b4e2'}
+              stroke={isSelected ? '#e11d48' : isHigh ? '#10b981' : '#3b4252'}
               strokeWidth={isSelected ? '3' : isHigh ? '2.5' : '2'}
               strokeLinecap="square"
               strokeLinejoin="miter"
               filter={isSelected ? 'url(#wire-glow-selected)' : isHigh ? 'url(#wire-glow-high)' : undefined}
-              className="transition-colors duration-150 group-hover:stroke-[#f472b6]"
+              className="transition-colors duration-150 group-hover:stroke-[#db2777]"
             />
-
-            {/* Animación rectilínea de flujo de señal para nivel alto (1) */}
-            {isHigh && (
-              <path
-                d={pathData}
-                fill="none"
-                stroke="#fbcfe8"
-                strokeWidth="1.5"
-                strokeLinecap="square"
-                strokeDasharray="4 8"
-                className="animate-[dash_1s_linear_infinite]"
-              />
-            )}
           </g>
         );
       })}
@@ -144,7 +144,7 @@ export const WiresRenderer: React.FC<WiresRendererProps> = ({
               <path
                 d={pathData}
                 fill="none"
-                stroke="#f472b6"
+                stroke="#e11d48"
                 strokeWidth="2.5"
                 strokeLinecap="square"
                 strokeDasharray="6 4"

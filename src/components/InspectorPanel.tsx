@@ -261,7 +261,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
               <span>Tono Pastel del Diodo:</span>
             </span>
             <div className="flex items-center gap-2.5 mt-2">
-              {['#f472b6', '#c084fc', '#6ee7b7', '#fdba74', '#7dd3fc'].map((c) => (
+              {['#10b981', '#f472b6', '#c084fc', '#fdba74', '#7dd3fc'].map((c) => (
                 <button
                   key={c}
                   type="button"
