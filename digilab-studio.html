@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DigiLab Studio · Simulador de Circuitos Jerárquico (Pastel Edition)</title>
+  <!-- Fuentes Google: Plus Jakarta Sans (UI) y JetBrains Mono (valores lógicos y códigos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* =========================================================================
+       5. VARIABLES CSS Y REDISEÑO VISUAL (ESTÉTICA PASTEL FEMENINA)
+       ========================================================================= */
+    :root {
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --bg-canvas: #fff8fb;
+      --bg-panel: rgba(255, 244, 249, 0.94);
+      --bg-panel-solid: #fff5fa;
+      --border-panel: rgba(249, 168, 212, 0.65);
+      
+      --accent-cyan: #ec4899;
+      --accent-blue: #c084fc;
+      --wire-high: #ec4899;
+      --wire-high-glow: rgba(244, 114, 182, 0.5);
+      --wire-low: #d8b4e2;
+      
+      --text-main: #59324c;
+      --text-muted: #8a5a7a;
+      --text-dim: #b084a1;
+
+      --grid-dot: rgba(244, 143, 177, 0.35);
+      --grid-line: rgba(216, 180, 254, 0.22);
+    }
+
+    html.dark {
+      --bg-canvas: #281d35;
+      --bg-panel: rgba(48, 35, 64, 0.94);
+      --bg-panel-solid: #312342;
+      --border-panel: rgba(249, 168, 212, 0.35);
+      --text-main: #fce7f3;
+      --text-muted: #f9a8d4;
+      --text-dim: #d8b4fe;
+      --grid-dot: rgba(249, 168, 212, 0.25);
+      --grid-line: rgba(216, 180, 254, 0.08);
+      --wire-low: #6d567e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      overflow: hidden;
+      user-select: none;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .font-mono { font-family: var(--font-mono); }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+
+    /* Rejilla Blueprint milimétrica */
+    .blueprint-grid {
+      background-color: var(--bg-canvas);
+      background-image: 
+        radial-gradient(circle at 1px 1px, var(--grid-dot) 1.5px, transparent 0),
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 24px 24px, 120px 120px, 120px 120px;
+    }
+
+    /* Barra Superior (Top Bar 3-zone contract) */
+    .top-bar {
+      height: 56px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      padding: 0 24px;
+      z-index: 40;
+      backdrop-filter: blur(16px);
+      flex-shrink: 0;
+    }
+
+    .brand-zone {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f472b6, #c084fc);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 13px;
+      box-shadow: 0 2px 10px rgba(244, 114, 182, 0.4);
+    }
+
+    .presets-zone {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .preset-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .preset-btn:hover { color: var(--accent-cyan); }
+
+    .actions-zone {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-panel);
+      background: rgba(252, 231, 243, 0.8);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn:hover {
+      background: #fbcfe8;
+      border-color: #f472b6;
+    }
+    .btn-sim {
+      background: linear-gradient(135deg, #f472b6, #c084fc);
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 2px 12px rgba(244, 114, 182, 0.4);
+    }
+    .btn-sim:hover { background: linear-gradient(135deg, #ec4899, #a855f7); }
+    .btn-sim.paused {
+      background: #fce7f3;
+      color: #be185d;
+      box-shadow: none;
+    }
+
+    /* Layout Principal */
+    .app-workspace {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Panel Izquierdo de Componentes */
+    .catalog-panel {
+      width: 280px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-panel);
+      display: flex;
+      flex-direction: column;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      flex-shrink: 0;
+    }
+    .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-panel);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .catalog-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .comp-item {
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid var(--border-panel);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+    }
+    .comp-item:hover {
+      background: #fdf2f8;
+      border-color: #f472b6;
+      transform: translateY(-1px);
+    }
+    .comp-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .comp-item-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+    .drill-tag {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #fce7f3;
+      color: #be185d;
+      border: 1px solid #f9a8d4;
+    }
+
+    /* Lienzo */
+    .canvas-viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .canvas-viewport.panning { cursor: grab; }
+    .canvas-viewport.panning:active { cursor: grabbing; }
+
+    /* 4. SUB-BARRA FLOTANTE DEL LIENZO (.canvas-subtoolbar) */
+    .canvas-subtoolbar {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .subtoolbar-box {
+      background: rgba(255, 245, 250, 0.95);
+      border: 2px solid var(--border-panel);
+      border-radius: 16px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 8px 20px -4px rgba(244, 114, 182, 0.25);
+      backdrop-filter: blur(12px);
+    }
+    .tool-btn {
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tool-btn:hover { background: #fce7f3; color: #be185d; }
+    .tool-btn.active {
+      background: #fce7f3;
+      color: #be185d;
+      border-color: #f472b6;
+    }
+
+    /* Botón contextual Ver Interior */
+    .btn-interior {
+      background: linear-gradient(135deg, #fce7f3, #f3e8ff);
+      border: 1px solid #f472b6;
+      color: #be185d;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      animation: pulse-glow 2s infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 8px rgba(244, 114, 182, 0.3); }
+      50% { box-shadow: 0 0 16px rgba(244, 114, 182, 0.6); }
+    }
+
+    /* Controles de Navegación Compactos */
+    .hierarchy-nav-bar {
+      background: rgba(255, 245, 250, 0.96);
+      border: 2px solid #f9a8d4;
+      border-radius: 16px;
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px -4px rgba(244, 114, 182, 0.25);
+    }
+    .level-pills {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .lvl-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      background: #fdf2f8;
+      color: #8a5a7a;
+      border: 1px solid #fbcfe8;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .lvl-pill:hover { background: #fce7f3; color: #be185d; }
+    .lvl-pill.active {
+      background: linear-gradient(135deg, #f472b6, #c084fc);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(244, 114, 182, 0.45);
+      transform: scale(1.05);
+    }
+
+    /* Nodos de circuito */
+    .circuit-node {
+      position: absolute;
+      cursor: move;
+      border-radius: 16px;
+      transition: box-shadow 0.15s, outline 0.15s;
+    }
+    .circuit-node.selected {
+      outline: 2px solid #f472b6;
+      box-shadow: 0 0 20px rgba(244, 114, 182, 0.35);
+    }
+
+    /* DIP Integrated Circuit */
+    .dip-package {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #fff0f7 0%, #fae8ff 100%);
+      border: 2px solid #f9a8d4;
+      border-radius: 16px;
+      padding: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 24px rgba(244, 114, 182, 0.22);
+    }
+    .dip-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 8px;
+      background: #f3e8ff;
+      border-bottom: 1px solid #d8b4fe;
+      border-radius: 0 0 5px 5px;
+    }
+    .dip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .dip-chip-code {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 11px;
+      color: #be185d;
+    }
+    .dip-body {
+      text-align: center;
+      margin: auto 0;
+    }
+    .dip-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #59324c;
+      font-family: var(--font-mono);
+    }
+    .dip-readout {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #be185d;
+      margin-top: 4px;
+      background: #ffffff;
+      border: 1px solid #f9a8d4;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    /* Pines */
+    .pin {
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #fdf2f8;
+      border: 2px solid #f472b6;
+      transform: translate(-50%, -50%);
+      cursor: crosshair;
+      z-index: 15;
+      transition: all 0.15s;
+    }
+    .pin:hover {
+      transform: translate(-50%, -50%) scale(1.3);
+      border-color: #ec4899;
+    }
+    .pin.high {
+      background: var(--wire-high);
+      border-color: #fbcfe8;
+      box-shadow: 0 0 8px var(--wire-high);
+    }
+    .pin-name {
+      position: absolute;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      color: #8a5a7a;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* Switch interactivo */
+    .switch-box {
+      width: 100%;
+      height: 100%;
+      background: #fff5fa;
+      border: 2px solid #f9a8d4;
+      border-radius: 16px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 6px 16px rgba(244, 114, 182, 0.2);
+    }
+    .switch-rocker {
+      width: 44px;
+      height: 24px;
+      background: #f3e8ff;
+      border: 1px solid #d8b4fe;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .switch-knob {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #c084fc;
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: #fff;
+    }
+    .switch-rocker.high {
+      background: #fce7f3;
+      border-color: #f472b6;
+    }
+    .switch-rocker.high .switch-knob {
+      left: 21px;
+      background: linear-gradient(135deg, #f472b6, #c084fc);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(244, 114, 182, 0.5);
+    }
+
+    /* Display 7 Segmentos */
+    .seg-display {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #fff0f7 0%, #fae8ff 100%);
+      border: 2px solid #f9a8d4;
+      border-radius: 16px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .seg-poly {
+      fill: #f5d0fe;
+      transition: fill 0.1s;
+    }
+    .seg-poly.on {
+      fill: #ec4899;
+      filter: drop-shadow(0 0 5px rgba(244, 114, 182, 0.8));
+    }
+
+    /* Inspector Lateral */
+    .inspector-panel {
+      width: 320px;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border-panel);
+      padding: 16px;
+      overflow-y: auto;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .info-card {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(2, 132, 199, 0.04));
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    /* Animación de cables */
+    @keyframes wireFlow {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+    .wire-active {
+      stroke-dasharray: 4 6;
+      animation: wireFlow 1s linear infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================================
+       TOP BAR (Wordmark, Presets MSI, Simulación, Exportar)
+       ========================================================================= -->
+  <header class="top-bar">
+    <div class="brand-zone">
+      <div class="brand-mark">A</div>
+      <span>AdaLab Studio</span>
+    </div>
+
+    <nav class="presets-zone">
+      <button class="preset-btn" onclick="loadFamilyPreset('adder_4bit')">Sumador 4b (74LS283)</button>
+      <button class="preset-btn" onclick="loadFamilyPreset('bcd_7seg')">BCD a 7-Seg (74LS47)</button>
+      <button class="preset-btn" onclick="loadFamilyPreset('dec_4_16')">Decodificador 4:16</button>
+      <button class="preset-btn" onclick="loadFamilyPreset('comp_4bit')">Comparador 4b</button>
+      <button class="preset-btn" onclick="loadFamilyPreset('mux_4_1')">MUX 4:1</button>
+    </nav>
+
+    <div class="actions-zone">
+      <button id="btn-sim" class="btn btn-sim" onclick="toggleSimulation()">● Simulando</button>
+      <button class="btn" onclick="stepSimulation()">Paso ↻</button>
+      <button class="btn" onclick="toggleTheme()">Tema</button>
+      <button class="btn" onclick="exportCircuitJson()">Exportar</button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       WORKSPACE: Catálogo, Lienzo y Sub-barra, Inspector
+       ========================================================================= -->
+  <div class="app-workspace">
+    <!-- Panel Izquierdo: Catálogo de Componentes -->
+    <aside class="catalog-panel">
+      <div class="panel-header">
+        <span>Componentes Digitales</span>
+        <span class="font-mono" style="font-size:10px; color:var(--text-dim);">MSI / Gates</span>
+      </div>
+      <div class="catalog-list">
+        <div class="comp-item" onclick="addNode('IC_74283', '74LS283 · 4-BIT ADDER')">
+          <div class="comp-item-header">
+            <span>CI 74LS283 (Sumador)</span>
+            <span class="drill-tag">N1-N4</span>
+          </div>
+          <div class="comp-item-desc">Sumador binario con acarreo anticipado</div>
+        </div>
+
+        <div class="comp-item" onclick="addNode('BCD_7SEG', '74LS47 · BCD TO 7-SEG')">
+          <div class="comp-item-header">
+            <span>CI 74LS47 (BCD a 7-Seg)</span>
+            <span class="drill-tag">N1-N2</span>
+          </div>
+          <div class="comp-item-desc">Decodificador para display de 7 segmentos</div>
+        </div>
+
+        <div class="comp-item" onclick="addNode('IC_74154', '74LS154 · 4:16 DEC')">
+          <div class="comp-item-header">
+            <span>CI 74LS154 (Dec 4:16)</span>
+            <span class="drill-tag">N1-N3</span>
+          </div>
+          <div class="comp-item-desc">Decodificador de 4 líneas a 16</div>
+        </div>
+
+        <div class="comp-item" onclick="addNode('FULL_ADDER', 'FA · Full Adder')">
+          <div class="comp-item-header">
+            <span>Full Adder (1 Bit)</span>
+            <span class="drill-tag">N2-N4</span>
+          </div>
+          <div class="comp-item-desc">2 Medios Sumadores + Compuerta OR</div>
+        </div>
+
+        <div class="comp-item" onclick="addNode('HALF_ADDER', 'HA · Half Adder')">
+          <div class="comp-item-header">
+            <span>Half Adder (1 Bit)</span>
+            <span class="drill-tag">N3-N4</span>
+          </div>
+          <div class="comp-item-desc">Compuertas XOR y AND elementales</div>
+        </div>
+
+        <div class="comp-item" onclick="addNode('SWITCH', 'Switch 0/1')">
+          <div class="comp-item-header">
+            <span>Interruptor Digital</span>
+          </div>
+          <div class="comp-item-desc">Entrada conmutable manual 0 / 1</div>
+        </div>
+
+        <div class="comp-item" onclick="addNode('LED', 'Diodo LED')">
+          <div class="comp-item-header">
+            <span>Indicador LED</span>
+          </div>
+          <div class="comp-item-desc">Visualizador luminoso de nivel alto</div>
+        </div>
+
+        <div class="comp-item" onclick="addNode('SEVEN_SEG', 'Display 7-Seg')">
+          <div class="comp-item-header">
+            <span>Display 7 Segmentos</span>
+          </div>
+          <div class="comp-item-desc">Visualizador numérico a-g</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Lienzo Interactivo -->
+    <main class="canvas-viewport blueprint-grid" id="canvas-viewport">
+      <!-- 4. SUB-BARRA FLOTANTE (.canvas-subtoolbar) -->
+      <div class="canvas-subtoolbar" id="canvas-subtoolbar">
+        <div class="subtoolbar-box">
+          <button class="tool-btn active" id="tool-select" onclick="setTool('select')">Selección</button>
+          <button class="tool-btn" id="tool-pan" onclick="setTool('pan')">Mano (Pan)</button>
+          <div style="width:1px; height:18px; background:var(--border-panel); margin:0 2px;"></div>
+          <button class="tool-btn" onclick="adjustZoom(-0.15)">-</button>
+          <span id="zoom-label" class="font-mono tabular-nums" style="font-size:11px; padding:0 4px;">100%</span>
+          <button class="tool-btn" onclick="adjustZoom(0.15)">+</button>
+          <button class="tool-btn" onclick="resetZoom()">1:1</button>
+          
+          <!-- Botón contextual Ver Interior (solo cuando corresponde) -->
+          <div id="contextual-drilldown-slot"></div>
+        </div>
+
+        <!-- Bloque de navegación jerárquica en una sola línea -->
+        <div id="hierarchy-nav-slot"></div>
+      </div>
+
+      <!-- Contenedor transformable de nodos y cables -->
+      <div id="canvas-transform" style="position:absolute; inset:0; transform-origin:0 0;">
+        <svg id="wires-layer" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:10; overflow:visible;"></svg>
+        <div id="nodes-layer" style="position:absolute; inset:0;"></div>
+      </div>
+    </main>
+
+    <!-- Panel Derecho: Inspector de Propiedades -->
+    <aside class="inspector-panel" id="inspector-panel">
+      <div>
+        <h3 style="font-size:13px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+          <span>Inspector de Propiedades</span>
+        </h3>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+          Información en tiempo real del componente y su estructura interna.
+        </p>
+
+        <div id="inspector-content" style="margin-top:16px;">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border-panel); padding-top:10px; font-size:10px; color:var(--text-dim); display:flex; justify-content:space-between;" class="font-mono">
+        <span>DigiLab Studio v2.4</span>
+        <span>Drill-Down Engine</span>
+      </div>
+    </aside>
+  </div>
+
+  <!-- =========================================================================
+       JAVASCRIPT AUTÓNOMO: SIMULACIÓN, JERARQUÍAS, DRILL-DOWN Y UI
+       ========================================================================= -->
+  <script>
+    /* =========================================================================
+       1. MODELO DE DATOS DE JERARQUÍAS MULTINIVEL
+       ========================================================================= */
+
+    function createPin(id, name, type, relX, relY) {
+      return { id, name, type, value: 0, relX, relY };
+    }
+
+    const HIERARCHY_FAMILIES = {
+      adder_4bit: {
+        id: 'adder_4bit',
+        name: 'Sumador de 4 Bits',
+        msiCode: 'CI 74LS283',
+        description: 'Suma binaria de 4 bits con acarreo anticipado (A0-A3 + B0-B3 + Cin).',
+        levels: [
+          {
+            level: 1,
+            levelKey: 'N1',
+            title: 'N1 · Encapsulado Comercial CI 74LS283',
+            description: 'CI MSI de 16 pines con arquitectura Look-Ahead Carry.',
+            nodes: [
+              { id: 'sw_a0', type: 'SWITCH', label: 'A0 (1)', x: 60, y: 80, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'A0', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'sw_a1', type: 'SWITCH', label: 'A1 (0)', x: 60, y: 150, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'A1', 'out', 1, 0.5)], state: { value: 0 } },
+              { id: 'sw_a2', type: 'SWITCH', label: 'A2 (1)', x: 60, y: 220, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'A2', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'sw_a3', type: 'SWITCH', label: 'A3 (0)', x: 60, y: 290, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'A3', 'out', 1, 0.5)], state: { value: 0 } },
+              { id: 'sw_b0', type: 'SWITCH', label: 'B0 (1)', x: 60, y: 380, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'B0', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'sw_b1', type: 'SWITCH', label: 'B1 (1)', x: 60, y: 450, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'B1', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'sw_b2', type: 'SWITCH', label: 'B2 (0)', x: 60, y: 520, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'B2', 'out', 1, 0.5)], state: { value: 0 } },
+              { id: 'sw_b3', type: 'SWITCH', label: 'B3 (0)', x: 60, y: 590, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'B3', 'out', 1, 0.5)], state: { value: 0 } },
+              { id: 'sw_cin', type: 'SWITCH', label: 'Cin (0)', x: 220, y: 30, width: 90, height: 50, inputs: [], outputs: [createPin('out', 'Cin', 'out', 1, 0.5)], state: { value: 0 } },
+              {
+                id: 'ic_74283_main',
+                type: 'IC_74283',
+                label: '74LS283 · 4-BIT ADDER',
+                x: 270,
+                y: 180,
+                width: 220,
+                height: 380,
+                inputs: [
+                  createPin('in_cin', 'Cin', 'in', 0.5, 0),
+                  createPin('in_a0', 'A0', 'in', 0, 0.15),
+                  createPin('in_b0', 'B0', 'in', 0, 0.25),
+                  createPin('in_a1', 'A1', 'in', 0, 0.35),
+                  createPin('in_b1', 'B1', 'in', 0, 0.45),
+                  createPin('in_a2', 'A2', 'in', 0, 0.55),
+                  createPin('in_b2', 'B2', 'in', 0, 0.65),
+                  createPin('in_a3', 'A3', 'in', 0, 0.75),
+                  createPin('in_b3', 'B3', 'in', 0, 0.85),
+                ],
+                outputs: [
+                  createPin('out_s0', 'Σ0', 'out', 1, 0.2),
+                  createPin('out_s1', 'Σ1', 'out', 1, 0.35),
+                  createPin('out_s2', 'Σ2', 'out', 1, 0.5),
+                  createPin('out_s3', 'Σ3', 'out', 1, 0.65),
+                  createPin('out_cout', 'Cout', 'out', 1, 0.8),
+                ]
+              },
+              { id: 'led_s0', type: 'LED', label: 'Σ0 (LSB)', x: 580, y: 150, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+              { id: 'led_s1', type: 'LED', label: 'Σ1', x: 580, y: 220, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+              { id: 'led_s2', type: 'LED', label: 'Σ2', x: 580, y: 290, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+              { id: 'led_s3', type: 'LED', label: 'Σ3 (MSB)', x: 580, y: 360, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+              { id: 'led_cout', type: 'LED', label: 'Cout', x: 580, y: 440, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#f59e0b' } },
+            ],
+            wires: [
+              { id: 'w1', fromNodeId: 'sw_cin', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_cin' },
+              { id: 'w2', fromNodeId: 'sw_a0', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_a0' },
+              { id: 'w3', fromNodeId: 'sw_b0', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_b0' },
+              { id: 'w4', fromNodeId: 'sw_a1', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_a1' },
+              { id: 'w5', fromNodeId: 'sw_b1', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_b1' },
+              { id: 'w6', fromNodeId: 'sw_a2', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_a2' },
+              { id: 'w7', fromNodeId: 'sw_b2', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_b2' },
+              { id: 'w8', fromNodeId: 'sw_a3', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_a3' },
+              { id: 'w9', fromNodeId: 'sw_b3', fromPinId: 'out', toNodeId: 'ic_74283_main', toPinId: 'in_b3' },
+              { id: 'w10', fromNodeId: 'ic_74283_main', fromPinId: 'out_s0', toNodeId: 'led_s0', toPinId: 'in' },
+              { id: 'w11', fromNodeId: 'ic_74283_main', fromPinId: 'out_s1', toNodeId: 'led_s1', toPinId: 'in' },
+              { id: 'w12', fromNodeId: 'ic_74283_main', fromPinId: 'out_s2', toNodeId: 'led_s2', toPinId: 'in' },
+              { id: 'w13', fromNodeId: 'ic_74283_main', fromPinId: 'out_s3', toNodeId: 'led_s3', toPinId: 'in' },
+              { id: 'w14', fromNodeId: 'ic_74283_main', fromPinId: 'out_cout', toNodeId: 'led_cout', toPinId: 'in' },
+            ]
+          },
+          {
+            level: 2,
+            levelKey: 'N2',
+            title: 'N2 · 4 Sumadores Completos en Cascada (Ripple Carry)',
+            description: 'Descomposición en 4 bloques Full Adder. El acarreo Cout pasa al Cin del siguiente bit.',
+            nodes: [
+              { id: 'fa_sw_cin', type: 'SWITCH', label: 'Cin', x: 40, y: 40, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'Cin', 'out', 1, 0.5)], state: { value: 0 } },
+              { id: 'fa_sw_a0', type: 'SWITCH', label: 'A0', x: 40, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A0', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'fa_sw_b0', type: 'SWITCH', label: 'B0', x: 40, y: 180, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'B0', 'out', 1, 0.5)], state: { value: 1 } },
+              {
+                id: 'fa_node_0',
+                type: 'FULL_ADDER',
+                label: 'FA0 (Bit 0)',
+                x: 230,
+                y: 120,
+                width: 140,
+                height: 100,
+                inputs: [createPin('a', 'A', 'in', 0, 0.25), createPin('b', 'B', 'in', 0, 0.5), createPin('cin', 'Cin', 'in', 0, 0.75)],
+                outputs: [createPin('s', 'Σ', 'out', 1, 0.35), createPin('cout', 'Cout', 'out', 1, 0.7)]
+              },
+              { id: 'fa_led_s0', type: 'LED', label: 'Σ0', x: 480, y: 130, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'w_fa_cin', fromNodeId: 'fa_sw_cin', fromPinId: 'out', toNodeId: 'fa_node_0', toPinId: 'cin' },
+              { id: 'w_fa_a0', fromNodeId: 'fa_sw_a0', fromPinId: 'out', toNodeId: 'fa_node_0', toPinId: 'a' },
+              { id: 'w_fa_b0', fromNodeId: 'fa_sw_b0', fromPinId: 'out', toNodeId: 'fa_node_0', toPinId: 'b' },
+              { id: 'w_fa_s0', fromNodeId: 'fa_node_0', fromPinId: 's', toNodeId: 'fa_led_s0', toPinId: 'in' }
+            ]
+          },
+          {
+            level: 3,
+            levelKey: 'N3',
+            title: 'N3 · Sumador Completo (2 Medios Sumadores + OR)',
+            description: 'Estructura interna: dos Half Adders (HA1, HA2) y una compuerta OR combinadora de acarreos.',
+            nodes: [
+              { id: 'n3_sw_a', type: 'SWITCH', label: 'A', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'n3_sw_b', type: 'SWITCH', label: 'B', x: 60, y: 190, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'n3_sw_cin', type: 'SWITCH', label: 'Cin', x: 60, y: 290, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'Cin', 'out', 1, 0.5)], state: { value: 0 } },
+              {
+                id: 'n3_ha1',
+                type: 'HALF_ADDER',
+                label: 'HA 1',
+                x: 230,
+                y: 120,
+                width: 140,
+                height: 90,
+                inputs: [createPin('a', 'A', 'in', 0, 0.3), createPin('b', 'B', 'in', 0, 0.7)],
+                outputs: [createPin('s', 'Σ1', 'out', 1, 0.3), createPin('c', 'C1', 'out', 1, 0.7)]
+              },
+              {
+                id: 'n3_ha2',
+                type: 'HALF_ADDER',
+                label: 'HA 2',
+                x: 430,
+                y: 180,
+                width: 140,
+                height: 90,
+                inputs: [createPin('a', 'Σ1', 'in', 0, 0.3), createPin('b', 'Cin', 'in', 0, 0.7)],
+                outputs: [createPin('s', 'Σ Final', 'out', 1, 0.3), createPin('c', 'C2', 'out', 1, 0.7)]
+              },
+              { id: 'n3_led_sum', type: 'LED', label: 'Σ Final', x: 650, y: 190, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wn3_1', fromNodeId: 'n3_sw_a', fromPinId: 'out', toNodeId: 'n3_ha1', toPinId: 'a' },
+              { id: 'wn3_2', fromNodeId: 'n3_sw_b', fromPinId: 'out', toNodeId: 'n3_ha1', toPinId: 'b' },
+              { id: 'wn3_3', fromNodeId: 'n3_ha1', fromPinId: 's', toNodeId: 'n3_ha2', toPinId: 'a' },
+              { id: 'wn3_4', fromNodeId: 'n3_sw_cin', fromPinId: 'out', toNodeId: 'n3_ha2', toPinId: 'b' },
+              { id: 'wn3_5', fromNodeId: 'n3_ha2', fromPinId: 's', toNodeId: 'n3_led_sum', toPinId: 'in' }
+            ]
+          },
+          {
+            level: 4,
+            levelKey: 'N4',
+            title: 'N4 · Compuertas Elementales (XOR, AND, OR)',
+            description: 'Nivel atómico de compuertas: Σ = A ⊕ B ⊕ Cin; Cout = (A·B) + Cin·(A ⊕ B).',
+            nodes: [
+              { id: 'n4_sw_a', type: 'SWITCH', label: 'A', x: 60, y: 100, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'n4_sw_b', type: 'SWITCH', label: 'B', x: 60, y: 180, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'n4_xor1', type: 'XOR', label: 'XOR 1', x: 230, y: 120, width: 100, height: 60, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'A⊕B', 'out', 1, 0.5)] },
+              { id: 'n4_led_sum', type: 'LED', label: 'Σ Suma', x: 450, y: 130, width: 85, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wn4_1', fromNodeId: 'n4_sw_a', fromPinId: 'out', toNodeId: 'n4_xor1', toPinId: 'in1' },
+              { id: 'wn4_2', fromNodeId: 'n4_sw_b', fromPinId: 'out', toNodeId: 'n4_xor1', toPinId: 'in2' },
+              { id: 'wn4_3', fromNodeId: 'n4_xor1', fromPinId: 'out', toNodeId: 'n4_led_sum', toPinId: 'in' }
+            ]
+          }
+        ]
+      },
+      bcd_7seg: {
+        id: 'bcd_7seg',
+        name: 'Decodificador BCD a 7-Seg',
+        msiCode: 'CI 74LS47',
+        description: 'Decodificación de código BCD (A, B, C, D) a los 7 segmentos a–g.',
+        levels: [
+          {
+            level: 1,
+            levelKey: 'N1',
+            title: 'N1 · Encapsulado CI 74LS47 con Display',
+            description: 'Decodificador BCD conectado a display de 7 segmentos.',
+            nodes: [
+              { id: 'b_sw_a', type: 'SWITCH', label: 'A (2⁰)', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'b_sw_c', type: 'SWITCH', label: 'C (2²)', x: 60, y: 200, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'C', 'out', 1, 0.5)], state: { value: 1 } },
+              {
+                id: 'ic_7447_main',
+                type: 'BCD_7SEG',
+                label: '74LS47 BCD DECODER',
+                x: 230,
+                y: 120,
+                width: 190,
+                height: 250,
+                inputs: [createPin('a', 'A', 'in', 0, 0.3), createPin('c', 'C', 'in', 0, 0.7)],
+                outputs: [createPin('qa', 'a', 'out', 1, 0.2), createPin('qb', 'b', 'out', 1, 0.5), createPin('qc', 'c', 'out', 1, 0.8)]
+              },
+              { id: 'disp_7seg', type: 'SEVEN_SEG', label: 'Display', x: 500, y: 120, width: 130, height: 210, inputs: [createPin('sa', 'a', 'in', 0, 0.2), createPin('sb', 'b', 'in', 0, 0.5), createPin('sc', 'c', 'in', 0, 0.8)], outputs: [] }
+            ],
+            wires: [
+              { id: 'wb1', fromNodeId: 'b_sw_a', fromPinId: 'out', toNodeId: 'ic_7447_main', toPinId: 'a' },
+              { id: 'wb2', fromNodeId: 'b_sw_c', fromPinId: 'out', toNodeId: 'ic_7447_main', toPinId: 'c' },
+              { id: 'wb3', fromNodeId: 'ic_7447_main', fromPinId: 'qa', toNodeId: 'disp_7seg', toPinId: 'sa' },
+              { id: 'wb4', fromNodeId: 'ic_7447_main', fromPinId: 'qb', toNodeId: 'disp_7seg', toPinId: 'sb' },
+              { id: 'wb5', fromNodeId: 'ic_7447_main', fromPinId: 'qc', toNodeId: 'disp_7seg', toPinId: 'sc' }
+            ]
+          },
+          {
+            level: 2,
+            levelKey: 'N2',
+            title: 'N2 · Red Combinacional SOP (Suma de Productos)',
+            description: 'Compuertas NOT, AND y OR sintetizando los segmentos a, b, c, d, e, f, g.',
+            nodes: [
+              { id: 'sop_sw_a', type: 'SWITCH', label: 'A', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'sop_gate_a', type: 'OR', label: 'Seg a', x: 230, y: 120, width: 100, height: 60, inputs: [createPin('i1', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'a', 'out', 1, 0.5)] },
+              { id: 'sop_led', type: 'LED', label: 'Seg a', x: 420, y: 125, width: 80, height: 50, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'ws1', fromNodeId: 'sop_sw_a', fromPinId: 'out', toNodeId: 'sop_gate_a', toPinId: 'i1' },
+              { id: 'ws2', fromNodeId: 'sop_gate_a', fromPinId: 'out', toNodeId: 'sop_led', toPinId: 'in' }
+            ]
+          }
+        ]
+      },
+      dec_4_16: {
+        id: 'dec_4_16',
+        name: 'Decodificador 4 a 16',
+        msiCode: 'CI 74LS154',
+        description: 'Decodificador de 4 a 16 líneas con líneas de habilitación.',
+        levels: [
+          {
+            level: 1,
+            levelKey: 'N1',
+            title: 'N1 · Encapsulado Comercial CI 74LS154',
+            description: 'CI MSI de 24 pines con 16 salidas activas.',
+            nodes: [
+              { id: 'd_sw_a', type: 'SWITCH', label: 'A (1)', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'ic_74154_m', type: 'IC_74154', label: '74LS154 4:16 DEC', x: 230, y: 110, width: 180, height: 260, inputs: [createPin('a', 'A', 'in', 0, 0.5)], outputs: [createPin('y1', 'Y1', 'out', 1, 0.3)] },
+              { id: 'd_led', type: 'LED', label: 'Y1', x: 480, y: 150, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#00f0ff' } }
+            ],
+            wires: [
+              { id: 'wd1', fromNodeId: 'd_sw_a', fromPinId: 'out', toNodeId: 'ic_74154_m', toPinId: 'a' },
+              { id: 'wd2', fromNodeId: 'ic_74154_m', fromPinId: 'y1', toNodeId: 'd_led', toPinId: 'in' }
+            ]
+          },
+          {
+            level: 2,
+            levelKey: 'N2',
+            title: 'N2 · Árbol de 5 Decodificadores 2:4',
+            description: '1 decodificador primario de selección + 4 decodificadores secundarios.',
+            nodes: [
+              { id: 't_sw_a', type: 'SWITCH', label: 'A', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 't_dec', type: 'DEC_2_4', label: 'DEC 2:4', x: 230, y: 120, width: 130, height: 110, inputs: [createPin('in0', 'A', 'in', 0, 0.5)], outputs: [createPin('y1', 'Y1', 'out', 1, 0.5)] },
+              { id: 't_led', type: 'LED', label: 'Y1', x: 440, y: 140, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wt1', fromNodeId: 't_sw_a', fromPinId: 'out', toNodeId: 't_dec', toPinId: 'in0' },
+              { id: 'wt2', fromNodeId: 't_dec', fromPinId: 'y1', toNodeId: 't_led', toPinId: 'in' }
+            ]
+          },
+          {
+            level: 3,
+            levelKey: 'N3',
+            title: 'N3 · Interior Decodificador 2:4 con NOT y AND',
+            description: 'Compuertas NOT y 4 compuertas AND decodificadoras.',
+            nodes: [
+              { id: 'd3_sw', type: 'SWITCH', label: 'A', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'd3_and', type: 'AND', label: 'AND', x: 220, y: 120, width: 100, height: 60, inputs: [createPin('i1', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+              { id: 'd3_led', type: 'LED', label: 'Y', x: 400, y: 125, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wd3_1', fromNodeId: 'd3_sw', fromPinId: 'out', toNodeId: 'd3_and', toPinId: 'i1' },
+              { id: 'wd3_2', fromNodeId: 'd3_and', fromPinId: 'out', toNodeId: 'd3_led', toPinId: 'in' }
+            ]
+          }
+        ]
+      },
+      enc_8_3: {
+        id: 'enc_8_3',
+        name: 'Codificador 8 a 3',
+        msiCode: 'CI 74LS148',
+        description: 'Codificador de prioridad de 8 a 3 líneas.',
+        levels: [
+          {
+            level: 1,
+            levelKey: 'N1',
+            title: 'N1 · CI 74LS148',
+            description: 'Codificador de prioridad comercial MSI.',
+            nodes: [
+              { id: 'e_sw_5', type: 'SWITCH', label: 'I5', x: 60, y: 150, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'I5', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'e_ic', type: 'ENC_8_3', label: '74LS148', x: 220, y: 120, width: 160, height: 180, inputs: [createPin('i5', 'I5', 'in', 0, 0.5)], outputs: [createPin('a0', 'A0', 'out', 1, 0.3), createPin('a2', 'A2', 'out', 1, 0.7)] },
+              { id: 'e_led', type: 'LED', label: 'A0', x: 440, y: 140, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'we1', fromNodeId: 'e_sw_5', fromPinId: 'out', toNodeId: 'e_ic', toPinId: 'i5' },
+              { id: 'we2', fromNodeId: 'e_ic', fromPinId: 'a0', toNodeId: 'e_led', toPinId: 'in' }
+            ]
+          },
+          {
+            level: 2,
+            levelKey: 'N2',
+            title: 'N2 · Red de Compuertas OR de 4 Entradas',
+            description: 'Compuertas OR sintetizando A0, A1, A2.',
+            nodes: [
+              { id: 'eo_sw', type: 'SWITCH', label: 'I5', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'I5', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'eo_or', type: 'OR', label: 'OR A0', x: 220, y: 120, width: 100, height: 60, inputs: [createPin('i5', 'I5', 'in', 0, 0.5)], outputs: [createPin('out', 'A0', 'out', 1, 0.5)] },
+              { id: 'eo_led', type: 'LED', label: 'A0', x: 400, y: 125, width: 75, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'weo1', fromNodeId: 'eo_sw', fromPinId: 'out', toNodeId: 'eo_or', toPinId: 'i5' },
+              { id: 'weo2', fromNodeId: 'eo_or', fromPinId: 'out', toNodeId: 'eo_led', toPinId: 'in' }
+            ]
+          }
+        ]
+      },
+      comp_4bit: {
+        id: 'comp_4bit',
+        name: 'Comparador de 4 Bits',
+        msiCode: 'CI 74LS85',
+        description: 'Comparación de magnitud A vs B.',
+        levels: [
+          {
+            level: 1,
+            levelKey: 'N1',
+            title: 'N1 · CI 74LS85',
+            description: 'Comparador de 4 bits con salidas A>B, A=B, A<B.',
+            nodes: [
+              { id: 'c_sw_a', type: 'SWITCH', label: 'A3 (1)', x: 60, y: 100, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A3', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'c_sw_b', type: 'SWITCH', label: 'B3 (0)', x: 60, y: 180, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'B3', 'out', 1, 0.5)], state: { value: 0 } },
+              { id: 'c_ic', type: 'IC_7485', label: '74LS85', x: 220, y: 110, width: 170, height: 180, inputs: [createPin('a3', 'A3', 'in', 0, 0.3), createPin('b3', 'B3', 'in', 0, 0.7)], outputs: [createPin('gt', 'A>B', 'out', 1, 0.5)] },
+              { id: 'c_led', type: 'LED', label: 'A > B', x: 460, y: 140, width: 85, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wc1', fromNodeId: 'c_sw_a', fromPinId: 'out', toNodeId: 'c_ic', toPinId: 'a3' },
+              { id: 'wc2', fromNodeId: 'c_sw_b', fromPinId: 'out', toNodeId: 'c_ic', toPinId: 'b3' },
+              { id: 'wc3', fromNodeId: 'c_ic', fromPinId: 'gt', toNodeId: 'c_led', toPinId: 'in' }
+            ]
+          },
+          {
+            level: 2,
+            levelKey: 'N2',
+            title: 'N2 · Comparador 1-bit con XNOR, NOT y AND',
+            description: 'Detección de igualdad con XNOR y magnitud con AND.',
+            nodes: [
+              { id: 'c2_sw_a', type: 'SWITCH', label: 'A (1)', x: 60, y: 100, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'c2_sw_b', type: 'SWITCH', label: 'B (0)', x: 60, y: 180, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 0 } },
+              { id: 'c2_and', type: 'AND', label: 'AND A·~B', x: 230, y: 120, width: 105, height: 60, inputs: [createPin('i1', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'A>B', 'out', 1, 0.5)] },
+              { id: 'c2_led', type: 'LED', label: 'A > B', x: 420, y: 125, width: 85, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wc2_1', fromNodeId: 'c2_sw_a', fromPinId: 'out', toNodeId: 'c2_and', toPinId: 'i1' },
+              { id: 'wc2_2', fromNodeId: 'c2_and', fromPinId: 'out', toNodeId: 'c2_led', toPinId: 'in' }
+            ]
+          }
+        ]
+      },
+      mux_4_1: {
+        id: 'mux_4_1',
+        name: 'Multiplexor 4 a 1',
+        msiCode: 'MUX 4:1',
+        description: 'Selector de datos de 4 canales.',
+        levels: [
+          {
+            level: 1,
+            levelKey: 'N1',
+            title: 'N1 · MUX 4:1 Modular',
+            description: 'Multiplexor de 4 entradas de datos y 2 líneas de selección.',
+            nodes: [
+              { id: 'm_sw_d2', type: 'SWITCH', label: 'D2 (1)', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'D2', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'm_sw_s1', type: 'SWITCH', label: 'S1 (1)', x: 60, y: 220, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'S1', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'm_mux', type: 'MUX_4_1', label: 'MUX 4:1', x: 230, y: 120, width: 160, height: 180, inputs: [createPin('d2', 'D2', 'in', 0, 0.4), createPin('s1', 'S1', 'in', 0.5, 1)], outputs: [createPin('y', 'Y', 'out', 1, 0.5)] },
+              { id: 'm_led', type: 'LED', label: 'Salida Y', x: 460, y: 150, width: 85, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wm1', fromNodeId: 'm_sw_d2', fromPinId: 'out', toNodeId: 'm_mux', toPinId: 'd2' },
+              { id: 'wm2', fromNodeId: 'm_sw_s1', fromPinId: 'out', toNodeId: 'm_mux', toPinId: 's1' },
+              { id: 'wm3', fromNodeId: 'm_mux', fromPinId: 'y', toNodeId: 'm_led', toPinId: 'in' }
+            ]
+          },
+          {
+            level: 2,
+            levelKey: 'N2',
+            title: 'N2 · Decodificador + 4 AND + 1 OR',
+            description: 'Canalización lógica interna.',
+            nodes: [
+              { id: 'm2_sw', type: 'SWITCH', label: 'D2', x: 60, y: 120, width: 85, height: 45, inputs: [], outputs: [createPin('out', 'D2', 'out', 1, 0.5)], state: { value: 1 } },
+              { id: 'm2_and', type: 'AND', label: 'AND Canal 2', x: 220, y: 120, width: 110, height: 60, inputs: [createPin('i1', 'D2', 'in', 0, 0.5)], outputs: [createPin('out', 'Y2', 'out', 1, 0.5)] },
+              { id: 'm2_led', type: 'LED', label: 'Salida Y', x: 420, y: 125, width: 85, height: 45, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } }
+            ],
+            wires: [
+              { id: 'wm2_1', fromNodeId: 'm2_sw', fromPinId: 'out', toNodeId: 'm2_and', toPinId: 'i1' },
+              { id: 'wm2_2', fromNodeId: 'm2_and', fromPinId: 'out', toNodeId: 'm2_led', toPinId: 'in' }
+            ]
+          }
+        ]
+      }
+    };
+
+    /* 1.b) NODE_TO_HIERARCHY_MAP */
+    const NODE_TO_HIERARCHY_MAP = {
+      'IC_74283': { family: 'adder_4bit', startLevel: 1, nextLevel: 2 },
+      'FULL_ADDER': { family: 'adder_4bit', startLevel: 2, nextLevel: 3 },
+      'HALF_ADDER': { family: 'adder_4bit', startLevel: 3, nextLevel: 4 },
+      'BCD_7SEG': { family: 'bcd_7seg', startLevel: 1, nextLevel: 2 },
+      'IC_7447': { family: 'bcd_7seg', startLevel: 1, nextLevel: 2 },
+      'IC_74154': { family: 'dec_4_16', startLevel: 1, nextLevel: 2 },
+      'DEC_2_4': { family: 'dec_4_16', startLevel: 2, nextLevel: 3 },
+      'ENC_8_3': { family: 'enc_8_3', startLevel: 1, nextLevel: 2 },
+      'IC_74148': { family: 'enc_8_3', startLevel: 1, nextLevel: 2 },
+      'IC_7485': { family: 'comp_4bit', startLevel: 1, nextLevel: 2 },
+      'MUX_4_1': { family: 'mux_4_1', startLevel: 1, nextLevel: 2 }
+    };
+
+    /* =========================================================================
+       ESTADO GLOBAL DEL SIMULADOR
+       ========================================================================= */
+    let currentNodes = JSON.parse(JSON.stringify(HIERARCHY_FAMILIES.adder_4bit.levels[0].nodes));
+    let currentWires = JSON.parse(JSON.stringify(HIERARCHY_FAMILIES.adder_4bit.levels[0].wires));
+    let selectedNodeId = 'ic_74283_main';
+    let selectedWireId = null;
+    let activeTool = 'select';
+    let zoom = 1;
+    let panOffset = { x: 40, y: 30 };
+
+    /* 3.a) hierarchyOriginSnapshot: Snapshot para restauración simétrica */
+    let hierarchyOriginSnapshot = null;
+    let activeFamilyId = null;
+    let currentLevel = 1;
+    let isSimulating = true;
+
+    /* =========================================================================
+       2. DRILL-DOWN Y NAVEGACIÓN SIMÉTRICA
+       ========================================================================= */
+
+    function drillDown(node) {
+      const mapping = NODE_TO_HIERARCHY_MAP[node.type];
+      if (!mapping) return;
+
+      const family = HIERARCHY_FAMILIES[mapping.family];
+      if (!family) return;
+
+      const targetLevel = family.levels.find(l => l.level === mapping.nextLevel);
+      if (!targetLevel) return;
+
+      // Guardar snapshot de origen solo si se entra desde el circuito del usuario
+      if (!hierarchyOriginSnapshot) {
+        hierarchyOriginSnapshot = {
+          nodes: JSON.parse(JSON.stringify(currentNodes)),
+          wires: JSON.parse(JSON.stringify(currentWires)),
+          selectedNodeId: node.id,
+          familyId: mapping.family,
+          panOffset: { ...panOffset },
+          zoom: zoom
+        };
+      }
+
+      // Bloquear familia y actualizar nivel
+      activeFamilyId = mapping.family;
+      currentLevel = mapping.nextLevel;
+      currentNodes = JSON.parse(JSON.stringify(targetLevel.nodes));
+      currentWires = JSON.parse(JSON.stringify(targetLevel.wires));
+      selectedNodeId = null;
+
+      render();
+    }
+
+    function goToLevel(lvlNum) {
+      if (!activeFamilyId) return;
+      const family = HIERARCHY_FAMILIES[activeFamilyId];
+      if (!family) return;
+
+      const target = family.levels.find(l => l.level === lvlNum);
+      if (!target) return;
+
+      currentLevel = lvlNum;
+      currentNodes = JSON.parse(JSON.stringify(target.nodes));
+      currentWires = JSON.parse(JSON.stringify(target.wires));
+      selectedNodeId = null;
+      render();
+    }
+
+    function goHigherLevel() {
+      if (!activeFamilyId) return;
+      const family = HIERARCHY_FAMILIES[activeFamilyId];
+      const idx = family.levels.findIndex(l => l.level === currentLevel);
+      if (idx > 0) {
+        goToLevel(family.levels[idx - 1].level);
+      } else if (hierarchyOriginSnapshot) {
+        returnToOrigin();
+      }
+    }
+
+    function goDeeperLevel() {
+      if (!activeFamilyId) return;
+      const family = HIERARCHY_FAMILIES[activeFamilyId];
+      const idx = family.levels.findIndex(l => l.level === currentLevel);
+      if (idx >= 0 && idx < family.levels.length - 1) {
+        goToLevel(family.levels[idx + 1].level);
+      }
+    }
+
+    function returnToOrigin() {
+      if (!hierarchyOriginSnapshot) return;
+      currentNodes = JSON.parse(JSON.stringify(hierarchyOriginSnapshot.nodes));
+      currentWires = JSON.parse(JSON.stringify(hierarchyOriginSnapshot.wires));
+      selectedNodeId = hierarchyOriginSnapshot.selectedNodeId;
+      panOffset = { ...hierarchyOriginSnapshot.panOffset };
+      zoom = hierarchyOriginSnapshot.zoom;
+
+      hierarchyOriginSnapshot = null;
+      activeFamilyId = null;
+      currentLevel = 1;
+
+      render();
+    }
+
+    function loadFamilyPreset(familyId) {
+      const family = HIERARCHY_FAMILIES[familyId];
+      if (!family) return;
+
+      currentNodes = JSON.parse(JSON.stringify(family.levels[0].nodes));
+      currentWires = JSON.parse(JSON.stringify(family.levels[0].wires));
+      selectedNodeId = currentNodes[0]?.id || null;
+      hierarchyOriginSnapshot = null;
+      activeFamilyId = null;
+      currentLevel = 1;
+      panOffset = { x: 40, y: 30 };
+      zoom = 1;
+      render();
+    }
+
+    /* =========================================================================
+       4. SIMULACIÓN LÓGICA EN TIEMPO REAL
+       ========================================================================= */
+
+    function solveCircuit() {
+      for (let pass = 0; pass < 8; pass++) {
+        // Propagar cables
+        for (const w of currentWires) {
+          const fn = currentNodes.find(n => n.id === w.fromNodeId);
+          const tn = currentNodes.find(n => n.id === w.toNodeId);
+          if (fn && tn) {
+            const fp = fn.outputs.find(p => p.id === w.fromPinId);
+            const tp = tn.inputs.find(p => p.id === w.toPinId);
+            if (fp && tp) {
+              w.value = fp.value;
+              tp.value = fp.value;
+            }
+          }
+        }
+
+        // Evaluar componentes
+        for (const n of currentNodes) {
+          const getIn = (pid) => n.inputs.find(p => p.id === pid)?.value || 0;
+          const setOut = (pid, val) => {
+            const p = n.outputs.find(p => p.id === pid);
+            if (p) p.value = val;
+          };
+
+          if (n.type === 'SWITCH') {
+            setOut('out', n.state?.value || 0);
+          } else if (n.type === 'AND') {
+            const res = n.inputs.length > 0 && n.inputs.every(p => p.value === 1) ? 1 : 0;
+            setOut('out', res);
+          } else if (n.type === 'OR') {
+            const res = n.inputs.some(p => p.value === 1) ? 1 : 0;
+            setOut('out', res);
+          } else if (n.type === 'XOR') {
+            const in1 = n.inputs[0]?.value || 0;
+            const in2 = n.inputs[1]?.value || 0;
+            setOut('out', in1 ^ in2);
+          } else if (n.type === 'HALF_ADDER') {
+            const a = getIn('a'), b = getIn('b');
+            setOut('s', a ^ b);
+            setOut('c', a & b);
+          } else if (n.type === 'FULL_ADDER') {
+            const a = getIn('a'), b = getIn('b'), cin = getIn('cin');
+            setOut('s', a ^ b ^ cin);
+            setOut('cout', (a & b) | (cin & (a ^ b)));
+          } else if (n.type === 'IC_74283') {
+            const cin = getIn('in_cin');
+            const a0 = getIn('in_a0'), b0 = getIn('in_b0');
+            const a1 = getIn('in_a1'), b1 = getIn('in_b1');
+            const a2 = getIn('in_a2'), b2 = getIn('in_b2');
+            const a3 = getIn('in_a3'), b3 = getIn('in_b3');
+            const va = a0 + a1*2 + a2*4 + a3*8;
+            const vb = b0 + b1*2 + b2*4 + b3*8;
+            const sum = va + vb + cin;
+            setOut('out_s0', sum & 1);
+            setOut('out_s1', (sum >> 1) & 1);
+            setOut('out_s2', (sum >> 2) & 1);
+            setOut('out_s3', (sum >> 3) & 1);
+            setOut('out_cout', sum >= 16 ? 1 : 0);
+            if (!n.state) n.state = {};
+            n.state.displayValue = va + ' + ' + vb + ' + ' + cin + ' = ' + sum;
+          } else if (n.type === 'LED') {
+            if (!n.state) n.state = {};
+            n.state.value = n.inputs[0]?.value || 0;
+          }
+        }
+      }
+    }
+
+    function toggleSimulation() {
+      isSimulating = !isSimulating;
+      const btn = document.getElementById('btn-sim');
+      if (btn) {
+        btn.textContent = isSimulating ? '● Simulando' : '▶ Pausado';
+        btn.className = isSimulating ? 'btn btn-sim' : 'btn btn-sim paused';
+      }
+    }
+
+    function stepSimulation() {
+      solveCircuit();
+      render();
+    }
+
+    setInterval(() => {
+      if (isSimulating) {
+        solveCircuit();
+        updateDynamicElements();
+      }
+    }, 100);
+
+    /* =========================================================================
+       RENDERIZADO COMPLETO DEL DOM Y LIENZO
+       ========================================================================= */
+
+    function render() {
+      solveCircuit();
+      renderCanvasTransform();
+      renderSubtoolbar();
+      renderInspector();
+    }
+
+    function renderCanvasTransform() {
+      const transformEl = document.getElementById('canvas-transform');
+      if (transformEl) {
+        transformEl.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom})`;
+      }
+      renderWires();
+      renderNodes();
+    }
+
+    function renderWires() {
+      const svg = document.getElementById('wires-layer');
+      if (!svg) return;
+      svg.innerHTML = '';
+
+      for (const w of currentWires) {
+        const fn = currentNodes.find(n => n.id === w.fromNodeId);
+        const tn = currentNodes.find(n => n.id === w.toNodeId);
+        if (!fn || !tn) continue;
+        const fp = fn.outputs.find(p => p.id === w.fromPinId);
+        const tp = tn.inputs.find(p => p.id === w.toPinId);
+        if (!fp || !tp) continue;
+
+        const x1 = fn.x + fn.width * fp.relX;
+        const y1 = fn.y + fn.height * fp.relY;
+        const x2 = tn.x + tn.width * tp.relX;
+        const y2 = tn.y + tn.height * tp.relY;
+        let pathData = '';
+        if (x2 >= x1 + 24) {
+          const midX = Math.round(x1 + (x2 - x1) / 2);
+          pathData = `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+        } else {
+          const exitX = x1 + 24;
+          const enterX = x2 - 24;
+          const midY = y1 < y2 ? Math.round(y1 + Math.abs(y2 - y1) / 2) : Math.round(y2 + Math.abs(y1 - y2) / 2);
+          pathData = `M ${x1} ${y1} L ${exitX} ${y1} L ${exitX} ${midY} L ${enterX} ${midY} L ${enterX} ${y2} L ${x2} ${y2}`;
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', isSel ? '#c084fc' : isHigh ? '#f43f5e' : '#4a3856');
+        path.setAttribute('stroke-width', isSel ? '3' : isHigh ? '2.5' : '2');
+        path.setAttribute('stroke-linecap', 'square');
+        path.setAttribute('stroke-linejoin', 'miter');
+        if (isHigh) path.setAttribute('class', 'wire-active');
+
+        svg.appendChild(path);
+      }
+    }
+
+    function renderNodes() {
+      const layer = document.getElementById('nodes-layer');
+      if (!layer) return;
+      layer.innerHTML = '';
+
+      for (const node of currentNodes) {
+        const nodeEl = document.createElement('div');
+        nodeEl.className = 'circuit-node' + (node.id === selectedNodeId ? ' selected' : '');
+        nodeEl.id = 'node-' + node.id;
+        nodeEl.style.left = node.x + 'px';
+        nodeEl.style.top = node.y + 'px';
+        nodeEl.style.width = node.width + 'px';
+        nodeEl.style.height = node.height + 'px';
+
+        // 2.a) DOBLE CLIC directo en el componente para entrar al interior
+        nodeEl.addEventListener('dblclick', (e) => {
+          e.stopPropagation();
+          if (NODE_TO_HIERARCHY_MAP[node.type]) {
+            drillDown(node);
+          }
+        });
+
+        // Selección sin destruir el DOM en mousedown
+        nodeEl.addEventListener('mousedown', (e) => {
+          if (e.target.closest('.switch-rocker')) return;
+          selectedNodeId = node.id;
+          selectedWireId = null;
+          // Actualiza clase sin recrear todo
+          document.querySelectorAll('.circuit-node').forEach(el => el.classList.remove('selected'));
+          nodeEl.classList.add('selected');
+          renderSubtoolbar();
+          renderInspector();
+        });
+
+        // Contenido según tipo
+        if (node.type === 'SWITCH') {
+          const isHigh = node.state?.value === 1;
+          nodeEl.innerHTML = `
+            <div class="switch-box">
+              <span class="font-mono" style="font-size:11px; font-weight:700;">${node.label}</span>
+              <div class="switch-rocker ${isHigh ? 'high' : ''}" onclick="toggleSwitch('${node.id}')">
+                <div class="switch-knob">${isHigh ? '1' : '0'}</div>
+              </div>
+            </div>
+          `;
+        } else if (node.type === 'LED') {
+          const isHigh = node.state?.value === 1;
+          nodeEl.innerHTML = `
+            <div class="switch-box" style="justify-content:flex-start; gap:8px;">
+              <div style="width:20px; height:20px; border-radius:50%; background:${isHigh ? '#10b981' : '#1e293b'}; box-shadow:${isHigh ? '0 0 14px #10b981' : 'none'}; border:1px solid #475569;"></div>
+              <span class="font-mono" style="font-size:11px; font-weight:700;">${node.label}</span>
+            </div>
+          `;
+        } else {
+          // Encapsulado DIP de CI
+          const hasH = !!NODE_TO_HIERARCHY_MAP[node.type];
+          nodeEl.innerHTML = `
+            <div class="dip-package">
+              <div class="dip-notch"></div>
+              <div class="dip-header">
+                <span class="dip-chip-code">${node.type}</span>
+                ${hasH ? '<span class="drill-tag">NIVEL ↗</span>' : ''}
+              </div>
+              <div class="dip-body">
+                <div class="dip-label">${node.label}</div>
+                ${node.state?.displayValue ? `<div class="dip-readout">${node.state.displayValue}</div>` : ''}
+              </div>
+              <div style="font-size:8px; color:var(--text-dim); display:flex; justify-content:space-between;" class="font-mono">
+                <span>DIP</span>
+                <span>Drill-Down ↗</span>
+              </div>
+            </div>
+          `;
+        }
+
+        // Pines
+        for (const p of [...node.inputs, ...node.outputs]) {
+          const pinEl = document.createElement('div');
+          pinEl.className = 'pin' + (p.value === 1 ? ' high' : '');
+          pinEl.style.left = (p.relX * 100) + '%';
+          pinEl.style.top = (p.relY * 100) + '%';
+          pinEl.title = p.name + ': ' + (p.value === 1 ? '1' : '0');
+          nodeEl.appendChild(pinEl);
+        }
+
+        layer.appendChild(nodeEl);
+      }
+    }
+
+    function toggleSwitch(nodeId) {
+      const node = currentNodes.find(n => n.id === nodeId);
+      if (node && node.state) {
+        node.state.value = node.state.value === 1 ? 0 : 1;
+        render();
+      }
+    }
+
+    function updateDynamicElements() {
+      // Actualización visual rápida de pines y lecturas
+      for (const node of currentNodes) {
+        const el = document.getElementById('node-' + node.id);
+        if (!el) continue;
+        const readout = el.querySelector('.dip-readout');
+        if (readout && node.state?.displayValue) {
+          readout.textContent = node.state.displayValue;
+        }
+      }
+    }
+
+    /* 4. CONTROLES DE NAVEGACIÓN COMPACTOS EN .canvas-subtoolbar */
+    function renderSubtoolbar() {
+      const contextualSlot = document.getElementById('contextual-drilldown-slot');
+      const navSlot = document.getElementById('hierarchy-nav-slot');
+      const selectedNode = currentNodes.find(n => n.id === selectedNodeId);
+
+      // Botón Contextual Ver Interior
+      if (contextualSlot) {
+        if (selectedNode && NODE_TO_HIERARCHY_MAP[selectedNode.type]) {
+          contextualSlot.innerHTML = `
+            <div style="width:1px; height:18px; background:var(--border-panel); margin:0 2px;"></div>
+            <button class="btn-interior" onclick="drillDown(currentNodes.find(n => n.id === '${selectedNode.id}'))">
+              <span>Ver Interior</span>
+            </button>
+          `;
+        } else {
+          contextualSlot.innerHTML = '';
+        }
+      }
+
+      // Barra compacta de jerarquía: [Volver] [< Mayor] [N1] -> [N2] -> [N3] [Menor >]
+      if (navSlot) {
+        if (activeFamilyId) {
+          const family = HIERARCHY_FAMILIES[activeFamilyId];
+          const levels = family.levels;
+          const isMin = currentLevel <= levels[0].level;
+          const isMax = currentLevel >= levels[levels.length - 1].level;
+
+          let pillsHtml = '';
+          levels.forEach((lvl, idx) => {
+            const isActive = lvl.level === currentLevel;
+            pillsHtml += `<button class="lvl-pill ${isActive ? 'active' : ''}" onclick="goToLevel(${lvl.level})" title="${lvl.title}">${lvl.levelKey}</button>`;
+            if (idx < levels.length - 1) pillsHtml += `<span style="font-size:10px; color:#64748b;">→</span>`;
+          });
+
+          navSlot.innerHTML = `
+            <div class="hierarchy-nav-bar">
+              ${hierarchyOriginSnapshot ? `<button class="tool-btn" onclick="returnToOrigin()" style="color:#38bdf8;">← Volver</button>` : ''}
+              <button class="tool-btn" onclick="goHigherLevel()" ${isMin ? 'disabled style="opacity:0.4;"' : ''}>&lt; Mayor</button>
+              <div class="level-pills">${pillsHtml}</div>
+              <button class="tool-btn" onclick="goDeeperLevel()" ${isMax ? 'disabled style="opacity:0.4;"' : ''}>Menor &gt;</button>
+              <span class="font-mono" style="font-size:10px; color:#38bdf8; border-left:1px solid #334155; padding-left:6px;">${family.name}</span>
+            </div>
+          `;
+        } else {
+          navSlot.innerHTML = '';
+        }
+      }
+    }
+
+    /* 2.c) TARJETA INFORMATIVA EN EL INSPECTOR */
+    function renderInspector() {
+      const container = document.getElementById('inspector-content');
+      if (!container) return;
+
+      const selectedNode = currentNodes.find(n => n.id === selectedNodeId);
+      if (!selectedNode) {
+        container.innerHTML = `
+          <div style="border:1px dashed var(--border-panel); border-radius:10px; padding:16px; text-align:center; font-size:12px; color:var(--text-muted);">
+            Haz clic en un componente para inspeccionar sus pines y su interior jerárquico.
+          </div>
+        `;
+        return;
+      }
+
+      const mapping = NODE_TO_HIERARCHY_MAP[selectedNode.type];
+      const family = mapping ? HIERARCHY_FAMILIES[mapping.family] : null;
+
+      let hierarchyHtml = '';
+      if (family) {
+        hierarchyHtml = `
+          <div class="info-card">
+            <div style="font-size:12px; font-weight:700; color:var(--accent-cyan);">Exploración Jerárquica</div>
+            <p style="font-size:11px; color:#cbd5e1; margin-top:4px;">${family.description}</p>
+            <div style="margin-top:10px; font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase;">Interior:</div>
+            <p style="font-size:11px; color:#e2e8f0; margin-top:2px;">
+              ${family.levels.find(l => l.level === mapping.nextLevel)?.description || ''}
+            </p>
+            <button class="btn btn-primary" style="width:100%; margin-top:12px; justify-content:center;" onclick="drillDown(currentNodes.find(n => n.id === '${selectedNode.id}'))">
+              Entrar al Interior (${family.levels.find(l => l.level === mapping.nextLevel)?.levelKey})
+            </button>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div style="border-bottom:1px solid var(--border-panel); padding-bottom:10px;">
+          <div style="font-size:10px; font-family:var(--font-mono); color:var(--accent-cyan); font-weight:700;">${selectedNode.type}</div>
+          <div style="font-size:13px; font-weight:700; margin-top:2px;">${selectedNode.label}</div>
+        </div>
+        ${hierarchyHtml}
+        <div style="margin-top:14px; border:1px solid var(--border-panel); border-radius:10px; padding:10px; background:rgba(15,23,42,0.4);">
+          <div style="font-size:11px; font-weight:700; margin-bottom:6px;">Pines en Vivo:</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;" class="font-mono">
+            ${[...selectedNode.inputs, ...selectedNode.outputs].map(p => `
+              <div style="background:#1e293b; padding:3px 6px; border-radius:4px; font-size:11px; display:flex; justify-content:space-between;">
+                <span style="color:#94a3b8;">${p.name}:</span>
+                <span style="color:${p.value === 1 ? '#10b981' : '#64748b'}; font-weight:700;">${p.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function setTool(tool) {
+      activeTool = tool;
+      document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.getElementById('tool-' + tool);
+      if (btn) btn.classList.add('active');
+    }
+
+    function adjustZoom(delta) {
+      zoom = Math.min(2.5, Math.max(0.4, zoom + delta));
+      const lbl = document.getElementById('zoom-label');
+      if (lbl) lbl.textContent = Math.round(zoom * 100) + '%';
+      renderCanvasTransform();
+    }
+
+    function resetZoom() {
+      zoom = 1;
+      const lbl = document.getElementById('zoom-label');
+      if (lbl) lbl.textContent = '100%';
+      renderCanvasTransform();
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.documentElement.classList.toggle('dark');
+    }
+
+    function exportCircuitJson() {
+      const data = { nodes: currentNodes, wires: currentWires };
+      const str = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
+      const a = document.createElement('a');
+      a.href = str;
+      a.download = 'circuito-digilab.json';
+      a.click();
+    }
+
+    // Inicialización al cargar la página
+    window.addEventListener('DOMContentLoaded', () => {
+      render();
+    });
+  </script>
+</body>
+</html>
