@@ -634,7 +634,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 <span className="text-[10px] font-mono text-[#7e22ce] bg-[#f3e8ff] px-1.5 rounded-full">N1-N2</span>
               </button>
 
-              <button
+               <button
                 type="button"
                 onClick={() => {
                   onLoadFamilyPreset('mux_4_1');
@@ -648,6 +648,58 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </div>
                 <span className="text-[10px] font-mono text-[#db2777] bg-[#fce7f3] px-1.5 rounded-full">N1-N2</span>
               </button>
+            </div>
+          )}
+        </div>
+
+        {/* ── 5B. MENÚ EJERCICIOS DEMOS CON COMPUERTAS ── */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => toggleDropdown('demos')}
+            className={`px-2.5 py-1.5 rounded-xl flex items-center gap-1 transition-all font-bold ${
+              activeDropdown === 'demos'
+                ? 'bg-gradient-to-r from-[#f472b6] to-[#c084fc] text-white shadow-sm'
+                : 'bg-[#fdf2f8] hover:bg-[#fce7f3] text-[#be185d] border border-[#f9a8d4] dark:bg-pink-500/20 dark:text-pink-100'
+            }`}
+          >
+            <Zap className="w-3.5 h-3.5 text-[#ec4899]" />
+            <span>Demos Compuertas</span>
+            <ChevronDown className="w-3 h-3" />
+          </button>
+
+          {activeDropdown === 'demos' && (
+            <div className="absolute left-0 top-full mt-1.5 w-76 bg-[#fff7fb] dark:bg-[#352647] border-2 border-[#f9a8d4] dark:border-pink-400/40 rounded-2xl shadow-xl shadow-pink-200/70 p-2 z-50 text-xs text-[#59324c] dark:text-pink-100 animate-fadeIn space-y-1">
+              <span className="text-[10px] font-mono text-[#be185d] dark:text-pink-300 px-2 py-0.5 block uppercase font-bold">
+                7 Ejercicios con Compuertas IEEE:
+              </span>
+
+              {[
+                { id: 'demo_full_adder', title: '1. Sumador Completo (Full Adder)', eq: 'S = A⊕B⊕Cin' },
+                { id: 'demo_subtractor', title: '2. Medio Restador Binario', eq: 'D = A⊕B, Bout = ~A·B' },
+                { id: 'demo_majority', title: '3. Votador de Mayoría (3 Sensores)', eq: 'Y = AB + BC + AC' },
+                { id: 'demo_comp_1bit', title: '4. Comparador de 1 Bit', eq: 'A>B, A=B, A<B' },
+                { id: 'demo_parity', title: '5. Detector de Paridad (4 Bits)', eq: 'Árbol XOR + NOT' },
+                { id: 'demo_demorgan', title: '6. Teorema de De Morgan', eq: '~(A·B) ≡ ~A + ~B' },
+                { id: 'demo_alarm', title: '7. Alarma de Seguridad Lógica', eq: 'A · (P + V)' },
+              ].map((demo) => (
+                <button
+                  key={demo.id}
+                  type="button"
+                  onClick={() => {
+                    onLoadFamilyPreset(demo.id);
+                    setActiveDropdown(null);
+                  }}
+                  className="w-full px-2.5 py-1.5 rounded-xl hover:bg-[#fce7f3] dark:hover:bg-purple-900/50 flex items-center justify-between text-left transition-colors gap-2"
+                >
+                  <span className="font-semibold text-[#59324c] dark:text-pink-100 truncate">
+                    {demo.title}
+                  </span>
+                  <span className="text-[9px] font-mono text-[#be185d] bg-[#fce7f3] dark:bg-pink-950 px-1.5 py-0.5 rounded-md border border-[#f9a8d4] shrink-0">
+                    {demo.eq}
+                  </span>
+                </button>
+              ))}
             </div>
           )}
         </div>

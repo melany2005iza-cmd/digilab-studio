@@ -962,6 +962,292 @@ export const HIERARCHY_FAMILIES: Record<string, HierarchyFamily> = {
       },
     ],
   },
+
+  // ═════════════════════════════════════════════════════════════
+  // ── EJERCICIOS DEMO CON COMPUERTAS LÓGICAS (NIVEL ESQUEMÁTICO)
+  // ═════════════════════════════════════════════════════════════
+
+  // ── DEMO 1: SUMADOR COMPLETO CON COMPUERTAS (EXACTO AL ESQUEMA) ──
+  demo_full_adder: {
+    id: 'demo_full_adder',
+    name: 'Demo 1: Sumador Completo (Full Adder)',
+    msiCode: 'S = A ⊕ B ⊕ Cin',
+    description: 'Implementación esquemática de un Sumador Completo de 1 bit con compuertas XOR (U1, U3), AND (U2, U5) y OR (U4).',
+    levels: [
+      {
+        level: 1,
+        levelKey: 'N1',
+        title: 'Esquemático: S = A ⊕ B ⊕ Cin  |  Cout = A·B + Cin·(A ⊕ B)',
+        description: 'Activa o desactiva las entradas A, B y Cin para comprobar las 8 combinaciones de la tabla de verdad de la suma binaria.',
+        nodes: [
+          { id: 'fa_a', type: 'SWITCH', label: 'A', x: 100, y: 100, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'fa_b', type: 'SWITCH', label: 'B', x: 100, y: 180, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 0 } },
+          { id: 'fa_cin', type: 'SWITCH', label: 'Cin', x: 100, y: 360, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'Cin', 'out', 1, 0.5)], state: { value: 1 } },
+
+          { id: 'u1_xor', type: 'XOR', label: 'U1', x: 280, y: 105, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'u2_and', type: 'AND', label: 'U2', x: 310, y: 260, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'u3_xor', type: 'XOR', label: 'U3', x: 540, y: 180, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'u5_and', type: 'AND', label: 'U5', x: 460, y: 340, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'u4_or', type: 'OR', label: 'U4', x: 630, y: 310, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'out_s', type: 'LED', label: 'S', x: 790, y: 190, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'out_cout', type: 'LED', label: 'Cout', x: 790, y: 320, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+        ],
+        wires: [
+          { id: 'w_fa1', fromNodeId: 'fa_a', fromPinId: 'out', toNodeId: 'u1_xor', toPinId: 'in1' },
+          { id: 'w_fa2', fromNodeId: 'fa_b', fromPinId: 'out', toNodeId: 'u1_xor', toPinId: 'in2' },
+          { id: 'w_fa3', fromNodeId: 'fa_a', fromPinId: 'out', toNodeId: 'u2_and', toPinId: 'in1' },
+          { id: 'w_fa4', fromNodeId: 'fa_b', fromPinId: 'out', toNodeId: 'u2_and', toPinId: 'in2' },
+          { id: 'w_fa5', fromNodeId: 'u1_xor', fromPinId: 'out', toNodeId: 'u3_xor', toPinId: 'in1' },
+          { id: 'w_fa6', fromNodeId: 'fa_cin', fromPinId: 'out', toNodeId: 'u3_xor', toPinId: 'in2' },
+          { id: 'w_fa7', fromNodeId: 'u1_xor', fromPinId: 'out', toNodeId: 'u5_and', toPinId: 'in1' },
+          { id: 'w_fa8', fromNodeId: 'fa_cin', fromPinId: 'out', toNodeId: 'u5_and', toPinId: 'in2' },
+          { id: 'w_fa9', fromNodeId: 'u2_and', fromPinId: 'out', toNodeId: 'u4_or', toPinId: 'in1' },
+          { id: 'w_fa10', fromNodeId: 'u5_and', fromPinId: 'out', toNodeId: 'u4_or', toPinId: 'in2' },
+          { id: 'w_fa11', fromNodeId: 'u3_xor', fromPinId: 'out', toNodeId: 'out_s', toPinId: 'in' },
+          { id: 'w_fa12', fromNodeId: 'u4_or', fromPinId: 'out', toNodeId: 'out_cout', toPinId: 'in' },
+        ],
+      },
+    ],
+  },
+
+  // ── DEMO 2: MEDIO RESTADOR BINARIO (HALF SUBTRACTOR) ─────────
+  demo_subtractor: {
+    id: 'demo_subtractor',
+    name: 'Demo 2: Medio Restador Binario',
+    msiCode: 'D = A ⊕ B, Bout = ~A·B',
+    description: 'Calcula la resta binaria A - B generando la Diferencia (D) y el Préstamo de salida (Bout) cuando A < B.',
+    levels: [
+      {
+        level: 1,
+        levelKey: 'N1',
+        title: 'Esquemático: D = A ⊕ B  |  Bout = ~A · B',
+        description: 'Con A=0 y B=1 se activa tanto la Diferencia (D=1) como el Préstamo (Bout=1) porque 0 - 1 requiere pedir prestado.',
+        nodes: [
+          { id: 'sub_a', type: 'SWITCH', label: 'A', x: 100, y: 120, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 0 } },
+          { id: 'sub_b', type: 'SWITCH', label: 'B', x: 100, y: 260, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 1 } },
+
+          { id: 'sub_u1', type: 'XOR', label: 'U1', x: 360, y: 120, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'sub_u2', type: 'NOT', label: 'U2', x: 260, y: 230, width: 90, height: 54, inputs: [createPin('in', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'sub_u3', type: 'AND', label: 'U3', x: 430, y: 250, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'sub_d', type: 'LED', label: 'D (Dif)', x: 640, y: 130, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'sub_bout', type: 'LED', label: 'Bout', x: 640, y: 260, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+        ],
+        wires: [
+          { id: 'ws1', fromNodeId: 'sub_a', fromPinId: 'out', toNodeId: 'sub_u1', toPinId: 'in1' },
+          { id: 'ws2', fromNodeId: 'sub_b', fromPinId: 'out', toNodeId: 'sub_u1', toPinId: 'in2' },
+          { id: 'ws3', fromNodeId: 'sub_a', fromPinId: 'out', toNodeId: 'sub_u2', toPinId: 'in' },
+          { id: 'ws4', fromNodeId: 'sub_u2', fromPinId: 'out', toNodeId: 'sub_u3', toPinId: 'in1' },
+          { id: 'ws5', fromNodeId: 'sub_b', fromPinId: 'out', toNodeId: 'sub_u3', toPinId: 'in2' },
+          { id: 'ws6', fromNodeId: 'sub_u1', fromPinId: 'out', toNodeId: 'sub_d', toPinId: 'in' },
+          { id: 'ws7', fromNodeId: 'sub_u3', fromPinId: 'out', toNodeId: 'sub_bout', toPinId: 'in' },
+        ],
+      },
+    ],
+  },
+
+  // ── DEMO 3: VOTADOR DE MAYORÍA DE 3 SENSORES ─────────────────
+  demo_majority: {
+    id: 'demo_majority',
+    name: 'Demo 3: Votador de Mayoría (3 Entradas)',
+    msiCode: 'Y = A·B + B·C + A·C',
+    description: 'Sistema de decisión por mayoría: la salida Y se activa (1) cuando al menos 2 de los 3 sensores (A, B, C) están en 1.',
+    levels: [
+      {
+        level: 1,
+        levelKey: 'N1',
+        title: 'Esquemático: Y = A·B + B·C + A·C (3 AND + 1 OR de 3 entradas)',
+        description: 'Prueba activar 0, 1, 2 o 3 entradas: verás que Y solo enciende con 2 o más entradas en estado alto (1).',
+        nodes: [
+          { id: 'maj_a', type: 'SWITCH', label: 'A', x: 90, y: 110, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'maj_b', type: 'SWITCH', label: 'B', x: 90, y: 220, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'maj_c', type: 'SWITCH', label: 'C', x: 90, y: 330, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'C', 'out', 1, 0.5)], state: { value: 0 } },
+
+          { id: 'maj_u1', type: 'AND', label: 'U1 (A·B)', x: 320, y: 95, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'maj_u2', type: 'AND', label: 'U2 (B·C)', x: 320, y: 210, width: 100, height: 64, inputs: [createPin('in1', 'B', 'in', 0, 0.3), createPin('in2', 'C', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'maj_u3', type: 'AND', label: 'U3 (A·C)', x: 320, y: 325, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'C', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'maj_u4', type: 'OR_3', label: 'U4', x: 540, y: 200, width: 105, height: 76, inputs: [createPin('in1', 'I1', 'in', 0, 0.22), createPin('in2', 'I2', 'in', 0, 0.5), createPin('in3', 'I3', 'in', 0, 0.78)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'maj_y', type: 'LED', label: 'Mayoría Y', x: 730, y: 215, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+        ],
+        wires: [
+          { id: 'wm1', fromNodeId: 'maj_a', fromPinId: 'out', toNodeId: 'maj_u1', toPinId: 'in1' },
+          { id: 'wm2', fromNodeId: 'maj_b', fromPinId: 'out', toNodeId: 'maj_u1', toPinId: 'in2' },
+          { id: 'wm3', fromNodeId: 'maj_b', fromPinId: 'out', toNodeId: 'maj_u2', toPinId: 'in1' },
+          { id: 'wm4', fromNodeId: 'maj_c', fromPinId: 'out', toNodeId: 'maj_u2', toPinId: 'in2' },
+          { id: 'wm5', fromNodeId: 'maj_a', fromPinId: 'out', toNodeId: 'maj_u3', toPinId: 'in1' },
+          { id: 'wm6', fromNodeId: 'maj_c', fromPinId: 'out', toNodeId: 'maj_u3', toPinId: 'in2' },
+          { id: 'wm7', fromNodeId: 'maj_u1', fromPinId: 'out', toNodeId: 'maj_u4', toPinId: 'in1' },
+          { id: 'wm8', fromNodeId: 'maj_u2', fromPinId: 'out', toNodeId: 'maj_u4', toPinId: 'in2' },
+          { id: 'wm9', fromNodeId: 'maj_u3', fromPinId: 'out', toNodeId: 'maj_u4', toPinId: 'in3' },
+          { id: 'wm10', fromNodeId: 'maj_u4', fromPinId: 'out', toNodeId: 'maj_y', toPinId: 'in' },
+        ],
+      },
+    ],
+  },
+
+  // ── DEMO 4: COMPARADOR DE MAGNITUD DE 1 BIT CON COMPUERTAS ───
+  demo_comp_1bit: {
+    id: 'demo_comp_1bit',
+    name: 'Demo 4: Comparador de 1 Bit (A>B, A=B, A<B)',
+    msiCode: 'XNOR + NOT + AND',
+    description: 'Compara dos bits A y B mediante compuertas elementales: A>B = A·~B, A=B = ~(A⊕B), A<B = ~A·B.',
+    levels: [
+      {
+        level: 1,
+        levelKey: 'N1',
+        title: 'Esquemático: Comparador Completo de 1 Bit (A > B, A = B, A < B)',
+        description: 'Cambia A y B para observar cómo solo una de las tres salidas (A>B, A=B o A<B) se pone en 1 a la vez.',
+        nodes: [
+          { id: 'c1_a', type: 'SWITCH', label: 'A', x: 90, y: 130, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'c1_b', type: 'SWITCH', label: 'B', x: 90, y: 290, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 0 } },
+
+          { id: 'c1_not_a', type: 'NOT', label: 'U1 (~A)', x: 250, y: 340, width: 90, height: 54, inputs: [createPin('in', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'c1_not_b', type: 'NOT', label: 'U2 (~B)', x: 250, y: 90, width: 90, height: 54, inputs: [createPin('in', 'B', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'c1_and_gt', type: 'AND', label: 'U3 (A·~B)', x: 440, y: 90, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', '~B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'c1_xnor_eq', type: 'XNOR', label: 'U4 (A⊙B)', x: 440, y: 210, width: 105, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'c1_and_lt', type: 'AND', label: 'U5 (~A·B)', x: 440, y: 330, width: 100, height: 64, inputs: [createPin('in1', '~A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'c1_led_gt', type: 'LED', label: 'A > B', x: 650, y: 100, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'c1_led_eq', type: 'LED', label: 'A = B', x: 650, y: 220, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'c1_led_lt', type: 'LED', label: 'A < B', x: 650, y: 340, width: 90, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+        ],
+        wires: [
+          { id: 'wc1', fromNodeId: 'c1_a', fromPinId: 'out', toNodeId: 'c1_and_gt', toPinId: 'in1' },
+          { id: 'wc2', fromNodeId: 'c1_b', fromPinId: 'out', toNodeId: 'c1_not_b', toPinId: 'in' },
+          { id: 'wc3', fromNodeId: 'c1_not_b', fromPinId: 'out', toNodeId: 'c1_and_gt', toPinId: 'in2' },
+          { id: 'wc4', fromNodeId: 'c1_a', fromPinId: 'out', toNodeId: 'c1_xnor_eq', toPinId: 'in1' },
+          { id: 'wc5', fromNodeId: 'c1_b', fromPinId: 'out', toNodeId: 'c1_xnor_eq', toPinId: 'in2' },
+          { id: 'wc6', fromNodeId: 'c1_a', fromPinId: 'out', toNodeId: 'c1_not_a', toPinId: 'in' },
+          { id: 'wc7', fromNodeId: 'c1_not_a', fromPinId: 'out', toNodeId: 'c1_and_lt', toPinId: 'in1' },
+          { id: 'wc8', fromNodeId: 'c1_b', fromPinId: 'out', toNodeId: 'c1_and_lt', toPinId: 'in2' },
+          { id: 'wc9', fromNodeId: 'c1_and_gt', fromPinId: 'out', toNodeId: 'c1_led_gt', toPinId: 'in' },
+          { id: 'wc10', fromNodeId: 'c1_xnor_eq', fromPinId: 'out', toNodeId: 'c1_led_eq', toPinId: 'in' },
+          { id: 'wc11', fromNodeId: 'c1_and_lt', fromPinId: 'out', toNodeId: 'c1_led_lt', toPinId: 'in' },
+        ],
+      },
+    ],
+  },
+
+  // ── DEMO 5: GENERADOR/DETECTOR DE PARIDAD DE 4 BITS ──────────
+  demo_parity: {
+    id: 'demo_parity',
+    name: 'Demo 5: Detector de Paridad (4 Bits)',
+    msiCode: 'P = D0 ⊕ D1 ⊕ D2 ⊕ D3',
+    description: 'Árbol de compuertas XOR (U1, U2, U3) e inversor (U4) para detectar cantidad impar o par de unos en una palabra de 4 bits.',
+    levels: [
+      {
+        level: 1,
+        levelKey: 'N1',
+        title: 'Esquemático: Árbol XOR de Paridad Impar y Par (4 Bits)',
+        description: 'P_Impar = 1 cuando hay 1 o 3 bits encendidos. P_Par = 1 cuando hay 0, 2 o 4 bits encendidos.',
+        nodes: [
+          { id: 'par_d0', type: 'SWITCH', label: 'D0', x: 90, y: 80, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'D0', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'par_d1', type: 'SWITCH', label: 'D1', x: 90, y: 150, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'D1', 'out', 1, 0.5)], state: { value: 0 } },
+          { id: 'par_d2', type: 'SWITCH', label: 'D2', x: 90, y: 260, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'D2', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'par_d3', type: 'SWITCH', label: 'D3', x: 90, y: 330, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'D3', 'out', 1, 0.5)], state: { value: 1 } },
+
+          { id: 'par_u1', type: 'XOR', label: 'U1', x: 280, y: 95, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'par_u2', type: 'XOR', label: 'U2', x: 280, y: 275, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'par_u3', type: 'XOR', label: 'U3', x: 470, y: 185, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'par_u4', type: 'NOT', label: 'U4', x: 610, y: 285, width: 90, height: 54, inputs: [createPin('in', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'par_odd', type: 'LED', label: 'P_Impar', x: 750, y: 195, width: 95, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'par_even', type: 'LED', label: 'P_Par', x: 750, y: 290, width: 95, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+        ],
+        wires: [
+          { id: 'wp1', fromNodeId: 'par_d0', fromPinId: 'out', toNodeId: 'par_u1', toPinId: 'in1' },
+          { id: 'wp2', fromNodeId: 'par_d1', fromPinId: 'out', toNodeId: 'par_u1', toPinId: 'in2' },
+          { id: 'wp3', fromNodeId: 'par_d2', fromPinId: 'out', toNodeId: 'par_u2', toPinId: 'in1' },
+          { id: 'wp4', fromNodeId: 'par_d3', fromPinId: 'out', toNodeId: 'par_u2', toPinId: 'in2' },
+          { id: 'wp5', fromNodeId: 'par_u1', fromPinId: 'out', toNodeId: 'par_u3', toPinId: 'in1' },
+          { id: 'wp6', fromNodeId: 'par_u2', fromPinId: 'out', toNodeId: 'par_u3', toPinId: 'in2' },
+          { id: 'wp7', fromNodeId: 'par_u3', fromPinId: 'out', toNodeId: 'par_odd', toPinId: 'in' },
+          { id: 'wp8', fromNodeId: 'par_u3', fromPinId: 'out', toNodeId: 'par_u4', toPinId: 'in' },
+          { id: 'wp9', fromNodeId: 'par_u4', fromPinId: 'out', toNodeId: 'par_even', toPinId: 'in' },
+        ],
+      },
+    ],
+  },
+
+  // ── DEMO 6: COMPROBACIÓN DEL TEOREMA DE DE MORGAN ────────────
+  demo_demorgan: {
+    id: 'demo_demorgan',
+    name: 'Demo 6: Teorema de De Morgan',
+    msiCode: '~(A·B) = ~A + ~B',
+    description: 'Demostración experimental en paralelo de la equivalencia entre una compuerta NAND y una compuerta OR con entradas invertidas.',
+    levels: [
+      {
+        level: 1,
+        levelKey: 'N1',
+        title: 'Esquemático: ~(A · B)  ≡  ~A + ~B (Equivalencia de De Morgan)',
+        description: 'Prueba las 4 combinaciones de A y B: comprobarás que las salidas Y1 (NAND) e Y2 (~A + ~B) son idénticas siempre.',
+        nodes: [
+          { id: 'dm_a', type: 'SWITCH', label: 'A', x: 90, y: 140, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'dm_b', type: 'SWITCH', label: 'B', x: 90, y: 270, width: 90, height: 44, inputs: [], outputs: [createPin('out', 'B', 'out', 1, 0.5)], state: { value: 0 } },
+
+          { id: 'dm_nand', type: 'NAND', label: 'U1 (NAND)', x: 380, y: 100, width: 105, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'dm_not1', type: 'NOT', label: 'U2 (~A)', x: 270, y: 235, width: 90, height: 54, inputs: [createPin('in', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'dm_not2', type: 'NOT', label: 'U3 (~B)', x: 270, y: 325, width: 90, height: 54, inputs: [createPin('in', 'B', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'dm_or', type: 'OR', label: 'U4 (~A+~B)', x: 450, y: 275, width: 100, height: 64, inputs: [createPin('in1', '~A', 'in', 0, 0.3), createPin('in2', '~B', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'dm_y1', type: 'LED', label: 'Y1 ~(A·B)', x: 640, y: 110, width: 95, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'dm_y2', type: 'LED', label: 'Y2 (~A+~B)', x: 640, y: 285, width: 95, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+        ],
+        wires: [
+          { id: 'wdm1', fromNodeId: 'dm_a', fromPinId: 'out', toNodeId: 'dm_nand', toPinId: 'in1' },
+          { id: 'wdm2', fromNodeId: 'dm_b', fromPinId: 'out', toNodeId: 'dm_nand', toPinId: 'in2' },
+          { id: 'wdm3', fromNodeId: 'dm_a', fromPinId: 'out', toNodeId: 'dm_not1', toPinId: 'in' },
+          { id: 'wdm4', fromNodeId: 'dm_b', fromPinId: 'out', toNodeId: 'dm_not2', toPinId: 'in' },
+          { id: 'wdm5', fromNodeId: 'dm_not1', fromPinId: 'out', toNodeId: 'dm_or', toPinId: 'in1' },
+          { id: 'wdm6', fromNodeId: 'dm_not2', fromPinId: 'out', toNodeId: 'dm_or', toPinId: 'in2' },
+          { id: 'wdm7', fromNodeId: 'dm_nand', fromPinId: 'out', toNodeId: 'dm_y1', toPinId: 'in' },
+          { id: 'wdm8', fromNodeId: 'dm_or', fromPinId: 'out', toNodeId: 'dm_y2', toPinId: 'in' },
+        ],
+      },
+    ],
+  },
+
+  // ── DEMO 7: SISTEMA DE ALARMA DE SEGURIDAD INDUSTRIAL ────────
+  demo_alarm: {
+    id: 'demo_alarm',
+    name: 'Demo 7: Alarma de Seguridad Lógica',
+    msiCode: 'Alarma = Armado · (Puerta + Ventana)',
+    description: 'Caso práctico de control: la sirena se activa si el sistema está Armado (A=1) y se abre la Puerta (P=1) o la Ventana (V=1).',
+    levels: [
+      {
+        level: 1,
+        levelKey: 'N1',
+        title: 'Esquemático: Alarma = Armado · (Puerta + Ventana)  |  Seguro = ~Alarma',
+        description: 'Con Armado=1 y Puerta=1 (o Ventana=1), se activa la salida Alarma (1) y se apaga el indicador Seguro (0).',
+        nodes: [
+          { id: 'al_arm', type: 'SWITCH', label: 'Armado', x: 90, y: 100, width: 95, height: 44, inputs: [], outputs: [createPin('out', 'A', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'al_p', type: 'SWITCH', label: 'Puerta', x: 90, y: 220, width: 95, height: 44, inputs: [], outputs: [createPin('out', 'P', 'out', 1, 0.5)], state: { value: 1 } },
+          { id: 'al_v', type: 'SWITCH', label: 'Ventana', x: 90, y: 310, width: 95, height: 44, inputs: [], outputs: [createPin('out', 'V', 'out', 1, 0.5)], state: { value: 0 } },
+
+          { id: 'al_u1', type: 'OR', label: 'U1 (P+V)', x: 280, y: 245, width: 100, height: 64, inputs: [createPin('in1', 'P', 'in', 0, 0.3), createPin('in2', 'V', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'al_u2', type: 'AND', label: 'U2', x: 460, y: 160, width: 100, height: 64, inputs: [createPin('in1', 'A', 'in', 0, 0.3), createPin('in2', 'P+V', 'in', 0, 0.7)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+          { id: 'al_u3', type: 'NOT', label: 'U3', x: 600, y: 270, width: 90, height: 54, inputs: [createPin('in', 'A', 'in', 0, 0.5)], outputs: [createPin('out', 'Y', 'out', 1, 0.5)] },
+
+          { id: 'al_out', type: 'LED', label: 'Alarma', x: 740, y: 170, width: 95, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+          { id: 'al_ok', type: 'LED', label: 'Seguro', x: 740, y: 275, width: 95, height: 44, inputs: [createPin('in', 'In', 'in', 0, 0.5)], outputs: [], state: { color: '#10b981' } },
+        ],
+        wires: [
+          { id: 'wal1', fromNodeId: 'al_p', fromPinId: 'out', toNodeId: 'al_u1', toPinId: 'in1' },
+          { id: 'wal2', fromNodeId: 'al_v', fromPinId: 'out', toNodeId: 'al_u1', toPinId: 'in2' },
+          { id: 'wal3', fromNodeId: 'al_arm', fromPinId: 'out', toNodeId: 'al_u2', toPinId: 'in1' },
+          { id: 'wal4', fromNodeId: 'al_u1', fromPinId: 'out', toNodeId: 'al_u2', toPinId: 'in2' },
+          { id: 'wal5', fromNodeId: 'al_u2', fromPinId: 'out', toNodeId: 'al_out', toPinId: 'in' },
+          { id: 'wal6', fromNodeId: 'al_u2', fromPinId: 'out', toNodeId: 'al_u3', toPinId: 'in' },
+          { id: 'wal7', fromNodeId: 'al_u3', fromPinId: 'out', toNodeId: 'al_ok', toPinId: 'in' },
+        ],
+      },
+    ],
+  },
 };
 
 /**
